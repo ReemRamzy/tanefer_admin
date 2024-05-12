@@ -33,6 +33,7 @@
                         prepend-icon="mdi-email"
                         :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'E-mail must be valid']"
                         color="orange"
+                        ref="emailField"
                         >
                         </v-text-field>
                         <v-text-field
@@ -44,6 +45,7 @@
                         prepend-icon="mdi-lock"
                         :rules="[v => !!v || 'Password is required', v => v.length >= 8 || 'Password must be at least 8 characters']"
                         color="orange"
+                        autocomplete="off"
                         >
                         </v-text-field>
                     </v-form>
@@ -133,6 +135,24 @@ export default {
       dialog: false
     }
   },
+  mounted () {
+    // Programatically set autocomplete attribute to "new-password"
+    this.$refs.emailField.$el.querySelector('input').setAttribute('autocomplete', 'new-password')
+
+    const token = localStorage.getItem('token')
+    const userTokenCookie = this.$cookies.get('userToken')
+    if (token && userTokenCookie) {
+      const decodedToken = JSON.parse(atob(token.split('.')[1])) // Decode the token
+      // Get the expiration time (in seconds)
+      const expirationTime = decodedToken.exp
+      // Get the current time (in seconds)
+      const currentTime = Math.floor(Date.now() / 1000)
+      const isAuthenticated = token && currentTime < expirationTime && userTokenCookie
+      if (isAuthenticated) {
+        this.$router.push({ name: 'Home' })
+      }
+    }
+  },
   methods: {
     send () {
       this.loading1 = true
@@ -165,9 +185,11 @@ export default {
             this.$store.dispatch('setUser', response.body.data.user)
             this.$cookies.set('userToken', response.body.data.token.access_token, response.body.data.token.expires_in)
             localStorage.setItem('userRoles', response.body.data.user.role.split(','))
+            localStorage.setItem('token', response.body.data.token.access_token)
             setTimeout(() => {
               this.$cookies.remove('userToken')
               this.$store.dispatch('removeUser')
+              localStorage.removeItem('token')
               this.$router.push({ name: 'login' })
             }, response.body.data.token.expires_in * 1000)
             // this.$http.get(countries, { headers: headers(this.$cookies.get('userToken')) }).then(response => {

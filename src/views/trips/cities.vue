@@ -102,6 +102,39 @@
                         color="orange"
                         >
                         </v-text-field>
+
+                        <v-text-field
+                        label="SEO Title"
+                        v-model="city.seo_title"
+                        type="text"
+                        outlined
+                        >
+                        </v-text-field>
+
+                        <v-textarea
+                        outlined
+                        label="SEO Description"
+                        v-model="city.seo_description"
+                        ></v-textarea>
+
+                        <span v-if="actionType === 'edit'">
+                          <v-text-field
+                          label="SEO Slug"
+                          v-model="city.slug"
+                          type="text"
+                          outlined
+                          >
+                          </v-text-field>
+                        </span>
+
+                        <v-file-input
+                        outlined
+                        accept="image/png, image/jpeg, image/bmp"
+                        placeholder="SEO Featured Image"
+                        prepend-inner-icon="mdi-image"
+                        label="SEO Featured Image"
+                        v-model="city.featured_image"
+                        ></v-file-input>
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
@@ -140,7 +173,11 @@ export default {
         description: '',
         image: null,
         caption: '',
-        alt: ''
+        alt: '',
+        seo_title: '',
+        seo_description: '',
+        slug: '',
+        featured_image: null
       },
       id: null,
       dialog: false,
@@ -176,7 +213,10 @@ export default {
         formData.append('airportCode', this.select)
         formData.append('image_alt', this.city.alt)
         formData.append('image_caption', this.city.caption)
+        formData.append('seo_title', this.city.seo_title)
+        formData.append('seo_description', this.city.seo_description)
         if (this.city.image) formData.append('image', this.city.image, this.city.image.name)
+        if (this.city.featured_image) formData.append('featured_image', this.city.featured_image, this.city.featured_image.name)
         this.$http.post(tripCities, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
           this.btnLoad = false
           if (response.status === 201) {
@@ -209,6 +249,9 @@ export default {
       this.city.alt = city.image_alt
       this.city.caption = city.image_caption
       this.select = city.airport_code
+      this.city.seo_title = city.seo_title
+      this.city.seo_description = city.seo_description
+      this.city.slug = city.slug
       this.id = city.id
       this.actionType = 'edit'
       this.dialog = true
@@ -224,7 +267,11 @@ export default {
         formData.append('airportCode', this.select)
         formData.append('image_alt', this.city.alt)
         formData.append('image_caption', this.city.caption)
+        formData.append('seo_title', this.city.seo_title)
+        formData.append('slug', this.city.slug)
+        formData.append('seo_description', this.city.seo_description)
         if (this.city.image) formData.append('image', this.city.image, this.city.image.name)
+        if (this.city.featured_image) formData.append('featured_image', this.city.featured_image, this.city.featured_image.name)
         this.$http.post(tripCity(this.id), formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
           this.btnLoad = false
           if (response.status === 201) {

@@ -819,12 +819,13 @@ export default {
       tourHeaders: [
         { text: 'Image', value: 'packageImage' },
         { text: 'Title', value: 'packageTitle' },
-        { text: 'Starting Airport', value: 'packagestartingairport' },
-        { text: 'Start City', value: 'packageStartCity.cityName' },
-        { text: 'Destinations', value: 'destination' },
-        { text: 'Occupancy', value: 'package_occupancy' },
-        { text: 'Expected Price', value: 'expected_price' },
+        // { text: 'Starting Airport', value: 'packagestartingairport' },
+        // { text: 'Start City', value: 'packageStartCity.cityName' },
+        // { text: 'Destinations', value: 'destination' },
+        // { text: 'Occupancy', value: 'package_occupancy' },
+        // { text: 'Expected Price', value: 'expected_price' },
         { text: 'Duration', value: 'packageDuration' },
+        { text: 'Night Number', value: 'packageNightsNumber' },
         { text: 'Remove', value: 'removeTour', align: 'end' }
       ],
       actionType: 'add',

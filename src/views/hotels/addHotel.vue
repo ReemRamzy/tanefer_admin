@@ -111,9 +111,10 @@
                         show-size
                         >
                         </v-file-input>
+                        <!-- api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4" -->
                         <editor
                         v-model="hotel.hotel_description"
-                        api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4"
+                        api-key="414unjfipp8yuhppj7tjmvs14aaneoj3dv7el0p4b2h3lsax"
                         :init="{
                           placeholder: 'Hotel Description',
                           height: 300,

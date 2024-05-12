@@ -22,12 +22,24 @@
         :page="page"
         :total="totalCruises"
         @pageNum="changePage"
+        @removeCruise="showDeletionDialog"
         />
+        <v-dialog max-width="700" v-model="removeActivityDialog">
+          <v-card>
+            <v-card-title>Are you sure you want to delete this cruise ?</v-card-title>
+            <v-divider class="my-2"></v-divider>
+            <v-card-actions>
+              <v-btn color="warning" text @click="removeActivityDialog = false">Cancel</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" tile @click="removeCruise">Delete</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
 <script>
-import { cruises, headers } from '../../links'
+import { cruises, removeCruise, headers } from '../../links'
 import grid from '../../components/tables.vue'
 // import actForm from '../../components/activityForm.vue'
 
@@ -51,7 +63,8 @@ export default {
         { text: 'Cruise line', value: 'cruise_line' },
         { text: 'Nights', value: 'number_of_nights' },
         { text: 'Ship name', value: 'ship_name' },
-        { text: 'Stars', value: 'stars' }
+        { text: 'Stars', value: 'stars' },
+        { text: 'Remove', value: 'removeAct' }
       ],
       editingActivity: null,
       showActivityDialog: false,
@@ -82,8 +95,31 @@ export default {
       })
     },
     changePage (num) {
-      this.getActivities(15, num)
+      this.getCruises(15, num)
       this.page = num
+    },
+    showDeletionDialog (id) {
+      this.deletedItemId = id
+      this.removeActivityDialog = true
+    },
+    removeCruise () {
+      this.$http.delete(removeCruise(this.deletedItemId), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
+        this.removeActivityDialog = false
+        if (response.body.status === 200) {
+          this.getCruises(15, 1)
+          this.snackbar = true
+          this.color = 'success'
+          this.text = 'Deleted Successfully'
+        } else {
+          this.snackbar = true
+          this.color = 'error'
+          this.text = response.body.message
+        }
+      }, err => {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = err.body.message
+      })
     }
   },
   created () {

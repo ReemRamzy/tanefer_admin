@@ -28,10 +28,10 @@
     @showActivity="showActivity"
     />
 
-    <v-dialog max-width="700" v-model="addDialog">
+    <v-dialog max-width="1000" v-model="addDialog">
         <actForm :data="editingActivity" :type="actionType" @close="addDialog = false" @added="closeDialog" />
     </v-dialog>
-    <v-dialog max-width="700" v-model="editDialog">
+    <v-dialog max-width="1000" v-model="editDialog">
         <actForm :data="editingActivity" :type="actionType" @close="editDialog = false" @added="closeDialog" />
     </v-dialog>
     <v-dialog max-width="700" v-model="removeActivityDialog">
@@ -135,10 +135,7 @@ export default {
       activityHeaders: [
         { text: 'Title', value: 'activityTitle' },
         { text: 'City', value: 'activityCity.CityName' },
-        { text: 'Type', value: 'activityType' },
-        { text: 'Price', value: 'activityPricePerPerson' },
         { text: 'Duration', value: 'activityDuration_digits' },
-        { text: 'Min number of travellers', value: 'activityPaxMinimum' },
         { text: 'Published', value: 'published' },
         { text: 'Edit', value: 'editAct' },
         { text: 'Remove', value: 'removeAct' }

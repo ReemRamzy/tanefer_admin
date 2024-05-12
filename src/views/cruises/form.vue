@@ -43,128 +43,147 @@
             <v-stepper-items>
                 <v-stepper-content step="1">
                     <v-form ref="basicForm" v-model="basicFormValid">
-                        <v-text-field
-                        label="Cruise Name"
-                        v-model="cruise.name"
+                      <v-text-field
+                      label="Cruise Name"
+                      v-model="cruise.name"
+                      type="text"
+                      outlined
+                      class="mt-3"
+                      :rules="[v => !!v || 'item is required']"
+                      color="blue"
+                      >
+                      </v-text-field>
+                      <v-text-field
+                      label="Cruise Line"
+                      v-model="cruise.cruise_line"
+                      type="text"
+                      outlined
+                      :rules="[v => !!v || 'item is required']"
+                      color="blue"
+                      >
+                      </v-text-field>
+                      <v-text-field
+                        label="SEO Title"
+                        v-model="cruise.seo_title"
                         type="text"
                         outlined
                         class="mt-3"
-                        :rules="[v => !!v || 'item is required']"
                         color="blue"
-                        >
-                        </v-text-field>
-                        <v-text-field
-                        label="Cruise Line"
-                        v-model="cruise.cruise_line"
+                      >
+                      </v-text-field>
+                      <v-text-field
+                        label="SEO Description"
+                        v-model="cruise.seo_description"
                         type="text"
                         outlined
-                        :rules="[v => !!v || 'item is required']"
+                        class="mt-3"
                         color="blue"
-                        >
-                        </v-text-field>
-                        <v-row>
-                          <v-col cols="12" sm="6">
-                            <v-text-field
-                            label="Cruise Ship"
-                            v-model="cruise.ship_name"
-                            type="text"
-                            outlined
-                            :rules="[v => !!v || 'item is required']"
-                            color="blue"
-                            >
-                            </v-text-field>
-                          </v-col>
-                          <v-col cols="12" sm="3">
-                            <v-text-field
-                            label="Cruise Stars"
-                            outlined
-                            v-model="cruise.stars"
-                            type="number"
-                            :rules="[v => !!v || 'item is required', v => v.length === 1 || 'Stars must be between 0 and 5', v => /^[0-5]*$/.test(v) || 'Stars must be between 0 and 5']"
-                            color="blue"
-                            max="5"
-                            min="0"
-                            class="mx-1"
-                            >
-                            </v-text-field>
-                          </v-col>
-                          <v-col cols="12" sm="3">
-                            <v-text-field
-                            label="Nights Number"
-                            outlined
-                            class="mx-1"
-                            v-model="cruise.number_of_nights"
-                            min="1"
-                            type="number"
-                            :rules="[v => !!v || 'Nights number is required']"
-                            color="blue"
-                            >
-                            </v-text-field>
-                          </v-col>
-                        </v-row>
-                        <!-- start days -->
-                        <v-select
-                        v-model="cruise.start_days"
-                        :items="['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']"
-                        :menu-props="{ maxHeight: '400' }"
-                        label="Choose Start Days"
-                        :rules="[v => !!v || 'item is required']"
-                        prepend-inner-icon="mdi-calendar"
-                        chips
-                        deletable-chips
-                        multiple
-                        outlined
-                        ></v-select>
-                        <v-select
-                        v-model="cruise.start_city_id"
-                        :items="cities"
-                        item-value="CityID"
-                        item-text="CityName"
-                        color="blue"
-                        outlined
-                        label="Cruise Start City"
-                        :rules="[v => !!v || 'city is required']"
-                        >
-                        </v-select>
-                        <v-select
-                        v-model="cruise.cities_ids"
-                        :items="cities"
-                        item-value="CityID"
-                        item-text="CityName"
-                        color="blue"
-                        outlined
-                        multiple
-                        label="Cruise Cities"
-                        :rules="[v => !!v || 'city is required']"
-                        >
-                        </v-select>
-                        <v-file-input
-                        v-model="cruise.master_image"
-                        accept="image/*"
-                        label="Cruise Image"
-                        :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
-                        color="blue"
-                        outlined
-                        show-size
-                        >
-                        </v-file-input>
-                        <editor
-                        v-model="cruise.description"
-                        api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4"
-                        :init="{
-                          placeholder: 'Cruise Description',
-                          height: 300,
-                          menubar: false,
-                          plugins: [
-                          'advlist autolink lists link anchor',
-                          'insertdatetime table paste'
-                          ],
-                          toolbar:
-                          'undo redo | formatselect | bold italic | \
-                          alignleft aligncenter alignright alignjustify | \
-                          bullist numlist outdent indent | removeformat'
-                        }"
-                        />
+                      >
+                      </v-text-field>
+                      <v-row>
+                        <v-col cols="12" sm="6">
+                          <v-text-field
+                          label="Cruise Ship"
+                          v-model="cruise.ship_name"
+                          type="text"
+                          outlined
+                          :rules="[v => !!v || 'item is required']"
+                          color="blue"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="3">
+                          <v-text-field
+                          label="Cruise Stars"
+                          outlined
+                          v-model="cruise.stars"
+                          type="number"
+                          :rules="[v => !!v || 'item is required', v => v.length === 1 || 'Stars must be between 0 and 5', v => /^[0-5]*$/.test(v) || 'Stars must be between 0 and 5']"
+                          color="blue"
+                          max="5"
+                          min="0"
+                          class="mx-1"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="3">
+                          <v-text-field
+                          label="Nights Number"
+                          outlined
+                          class="mx-1"
+                          v-model="cruise.number_of_nights"
+                          min="1"
+                          type="number"
+                          :rules="[v => !!v || 'Nights number is required']"
+                          color="blue"
+                          >
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                      <!-- start days -->
+                      <v-select
+                      v-model="cruise.start_days"
+                      :items="['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']"
+                      :menu-props="{ maxHeight: '400' }"
+                      label="Choose Start Days"
+                      :rules="[v => !!v || 'item is required']"
+                      prepend-inner-icon="mdi-calendar"
+                      chips
+                      deletable-chips
+                      multiple
+                      outlined
+                      ></v-select>
+                      <v-select
+                      v-model="cruise.start_city_id"
+                      :items="cities"
+                      item-value="CityID"
+                      item-text="CityName"
+                      color="blue"
+                      outlined
+                      label="Cruise Start City"
+                      :rules="[v => !!v || 'city is required']"
+                      >
+                      </v-select>
+                      <v-select
+                      v-model="cruise.cities_ids"
+                      :items="cities"
+                      item-value="CityID"
+                      item-text="CityName"
+                      color="blue"
+                      outlined
+                      multiple
+                      label="Cruise Cities"
+                      :rules="[v => !!v || 'city is required']"
+                      >
+                      </v-select>
+                      <v-file-input
+                      v-model="cruise.master_image"
+                      accept="image/*"
+                      label="Cruise Image"
+                      :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                      color="blue"
+                      outlined
+                      show-size
+                      >
+                      </v-file-input>
+                      <!-- api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4" -->
+                      <editor
+                      v-model="cruise.description"
+                      api-key="414unjfipp8yuhppj7tjmvs14aaneoj3dv7el0p4b2h3lsax"
+                      :init="{
+                        placeholder: 'Cruise Description',
+                        height: 300,
+                        menubar: false,
+                        plugins: [
+                        'advlist autolink lists link anchor',
+                        'insertdatetime table paste'
+                        ],
+                        toolbar:
+                        'undo redo | formatselect | bold italic | \
+                        alignleft aligncenter alignright alignjustify | \
+                        bullist numlist outdent indent | removeformat'
+                      }"
+                      />
                     </v-form>
                     <v-divider class="my-3"></v-divider>
                     <v-btn
@@ -565,6 +584,33 @@
                     </v-row>
 
                     <v-row justify="space-around">
+                      <table id="" class="text-center">
+                        <tbody>
+                          <tr v-for="(childtiers, tierIndex) in room.childrentiers" :key="tierIndex">
+                            <td>
+                              <v-text-field v-model="childtiers.min" label="Min" outlined class="inputNumber mx-1" type="number" color="blue">
+                              </v-text-field>
+                            </td>
+                            <td>
+                              <v-text-field v-model="childtiers.max" label="Max" outlined class="inputNumber mx-1" type="number" color="blue">
+                              </v-text-field>
+                            </td>
+                            <td>
+                              <v-text-field v-model="childtiers.percentage" label="Percentage" outlined class="inputNumber mx-1" type="number" color="blue" prefix="%" :rules="minMaxRules">
+                              </v-text-field>
+                            </td>
+                            <td>
+                              <v-btn @click="removeChildrenTier(tierIndex)" color="red" icon elevation="4" style="margin-top: -35px;">
+                                <v-icon>mdi-close</v-icon>
+                              </v-btn>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <v-btn @click="addNewChildrentier()" color="primary" class="mr-4">Add New Childrentier</v-btn>
+                    </v-row>
+
+                    <v-row justify="space-around">
                       <v-col cols="12" md="5">
                         <v-select
                         v-model="roomSeason.id"
@@ -748,7 +794,7 @@
 </template>
 
 <script>
-import { headers, addCruise, formLists } from '../../links'
+import { headers, storeCruise, formLists } from '../../links'
 import Editor from '@tinymce/tinymce-vue'
 import dateDisplay from '../../components/dateDisplay'
 
@@ -759,6 +805,11 @@ export default {
   },
   data () {
     return {
+      minMaxRules: [
+        v => !!v || 'This field is required',
+        v => (v && v >= 0) || 'should be equal 0 or more',
+        v => (v && v <= 100) || 'should be equal 100 or less'
+      ],
       snackbar: false,
       color: '',
       text: '',
@@ -783,7 +834,9 @@ export default {
         city_id: null,
         number_of_nights: 1,
         images: [],
-        rooms: []
+        rooms: [],
+        seo_title: '',
+        seo_description: ''
       },
       room: {
         type: '',
@@ -793,6 +846,13 @@ export default {
         categories: [],
         max_num_adult: null,
         max_num_children: null,
+        childrentiers: [
+          {
+            min: '',
+            max: '',
+            percentage: ''
+          }
+        ],
         seasons: []
       },
       roomSeason: {
@@ -901,6 +961,13 @@ export default {
           categories: [],
           max_num_adult: null,
           max_num_children: null,
+          childrentiers: [
+            {
+              min: '',
+              max: '',
+              percentage: ''
+            }
+          ],
           price_per_day: null,
           seasons: []
         }
@@ -958,14 +1025,21 @@ export default {
           formData.append(`rooms[${i}][seasons][${j}][id]`, this.cruise.rooms[i].seasons[j].id)
           formData.append(`rooms[${i}][seasons][${j}][price_per_person]`, this.cruise.rooms[i].seasons[j].price_per_person)
         }
+        for (let c = 0; c < this.cruise.rooms[i].childrentiers.length; c++) {
+          formData.append(`rooms[${i}][childrens][${c}][min]`, this.cruise.rooms[i].childrentiers[c].min)
+          formData.append(`rooms[${i}][childrens][${c}][max]`, this.cruise.rooms[i].childrentiers[c].max)
+          formData.append(`rooms[${i}][childrens][${c}][children_Percentage]`, this.cruise.rooms[i].childrentiers[c].percentage)
+        }
         // formData.append(`rooms[${i}][season_id]`, this.cruise.rooms[i].season_id)
       }
       for (let i = 0; i < this.cruise.images.length; i++) {
         formData.append('images[]', this.cruise.images[i], this.cruise.images[i].name)
       }
+      formData.append('seo_title', this.cruise.seo_title)
+      formData.append('seo_description', this.cruise.seo_description)
       this.addCruiseLoading = true
 
-      this.$http.post(addCruise, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
+      this.$http.post(storeCruise, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
         console.log(response)
         this.addcruiseLoading = false
         if (response.status === 200) {
@@ -987,6 +1061,32 @@ export default {
       }).finally(() => {
         this.addCruiseLoading = false
       })
+    },
+    addNewChildrentier () {
+      const childrentiersArr = this.room.childrentiers
+
+      if (childrentiersArr.length > 0) {
+        const lastChildrenTier = childrentiersArr[childrentiersArr.length - 1]
+        const newMin = lastChildrenTier.max ? parseInt(lastChildrenTier.max) + 1 : '' // Set the new min value to the previous max value
+        const newChildrenTier = {
+          name: '',
+          min: newMin,
+          max: '',
+          adult_price: '',
+          child_percentage: ''
+        }
+        this.room.childrentiers.push(newChildrenTier)
+      } else {
+        // Add new pricing tier for the first tier
+        this.room.childrentiers.push({
+          min: '',
+          max: '',
+          percentage: ''
+        })
+      }
+    },
+    removeChildrenTier (index) {
+      this.room.childrentiers.splice(index, 1)
     }
   },
   beforeCreate () {

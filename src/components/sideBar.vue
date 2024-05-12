@@ -294,6 +294,32 @@
                             <v-list-item-title>Adventures Bookings</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
+                    <v-list-item
+                    link
+                    to="/cruises/bookings"
+                    class="pl-5"
+                    >
+                        <v-list-item-icon>
+                            <v-icon>mdi-ticket</v-icon>
+                        </v-list-item-icon>
+
+                        <v-list-item-content>
+                            <v-list-item-title>Cruises Bookings</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item
+                    link
+                    to="/hotels/bookings"
+                    class="pl-5"
+                    >
+                        <v-list-item-icon>
+                            <v-icon>mdi-ticket</v-icon>
+                        </v-list-item-icon>
+
+                        <v-list-item-content>
+                            <v-list-item-title>Hotels Bookings</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
                     <!-- <v-list-item
                     link
                     to="/profits"
@@ -321,6 +347,18 @@
                         </v-list-item-content>
                     </v-list-item> -->
                 </v-list-group>
+                <v-list-item
+                link
+                to="/setting-seo"
+                >
+                    <v-list-item-icon>
+                        <v-icon>mdi-web</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>SEO</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
    </div>
@@ -348,6 +386,7 @@ export default {
       this.$http.post(logout, null, { headers: headers(this.$cookies.get('userToken')) }).then(() => {
         this.$store.dispatch('removeUser')
         this.$cookies.remove('userToken')
+        localStorage.removeItem('token')
         this.$router.push({ name: 'login' })
       })
     }

@@ -111,7 +111,7 @@
 
             <v-divider class="my-4"></v-divider>
 
-            <v-card-title v-if="cruise.childrenPolicies.length">Children Policies</v-card-title>
+            <!-- <v-card-title v-if="cruise.childrenPolicies.length">Children Policies</v-card-title>
 
             <v-card-text v-if="cruise.childrenPolicies.length">
               <v-simple-table dense class="policies">
@@ -176,18 +176,17 @@
                   </tbody>
                 </template>
             </v-simple-table>
-            </v-card-text>
-
+            </v-card-text> -->
+            <!-- @click="$store.state.childPolicies = cruise.childrenPolicies.find(el => el.occupancy === 'single'); $router.push({name: 'hotelPolicies', params: {type: 'cruise', id: cruise.id, occupancy: 'single'}})" -->
+            <!-- @click="$store.state.childPolicies = cruise.childrenPolicies.find(el => el.occupancy === 'double'); $router.push({name: 'hotelPolicies', params: {type: 'cruise', id: cruise.id, occupancy: 'douple'}})" -->
             <v-card-actions>
               <v-btn
               color="blue lighten-1 white--text"
-              @click="$store.state.childPolicies = cruise.childrenPolicies.find(el => el.occupancy === 'single'); $router.push({name: 'hotelPolicies', params: {type: 'cruise', id: cruise.id, occupancy: 'single'}})"
               >
                 Single Room
               </v-btn>
               <v-btn
               color="blue lighten-1 white--text"
-              @click="$store.state.childPolicies = cruise.childrenPolicies.find(el => el.occupancy === 'double'); $router.push({name: 'hotelPolicies', params: {type: 'cruise', id: cruise.id, occupancy: 'douple'}})"
               >
                 Douple Room
               </v-btn>
@@ -324,6 +323,24 @@
                 outlined
                 :rules="[v => !!v || 'item is required']"
                 color="blue"
+                >
+                </v-text-field>
+                <v-text-field
+                  label="SEO Title"
+                  v-model="editingCruise.seo_title"
+                  type="text"
+                  outlined
+                  class="mt-3"
+                  color="blue"
+                >
+                </v-text-field>
+                <v-text-field
+                  label="SEO Description"
+                  v-model="editingCruise.seo_description"
+                  type="text"
+                  outlined
+                  class="mt-3"
+                  color="blue"
                 >
                 </v-text-field>
                 <v-row>
@@ -572,10 +589,10 @@
                     </template>
                 </v-simple-table>
                 <v-divider class="my-2"></v-divider>
-
+                <!-- api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4" -->
                 <editor
                 v-model="editingCruise.description"
-                api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4"
+                api-key="414unjfipp8yuhppj7tjmvs14aaneoj3dv7el0p4b2h3lsax"
                 :init="{
                   placeholder: 'Cruise Description',
                   height: 200,
@@ -813,6 +830,33 @@
                 </v-row>
 
                 <v-row justify="space-around">
+                  <table id="" class="text-center">
+                    <tbody>
+                      <tr v-for="(childtiers, tierIndex) in room.childrentiers" :key="tierIndex">
+                        <td>
+                          <v-text-field v-model="childtiers.min" label="Min" outlined class="inputNumber mx-1" type="number" color="blue">
+                          </v-text-field>
+                        </td>
+                        <td>
+                          <v-text-field v-model="childtiers.max" label="Max" outlined class="inputNumber mx-1" type="number" color="blue">
+                          </v-text-field>
+                        </td>
+                        <td>
+                          <v-text-field v-model="childtiers.percentage" label="Percentage" outlined class="inputNumber mx-1" type="number" color="blue" prefix="%" :rules="minMaxRules">
+                          </v-text-field>
+                        </td>
+                        <td>
+                          <v-btn @click="removeChildrenTier(tierIndex)" color="red" icon elevation="4" style="margin-top: -35px;">
+                            <v-icon>mdi-close</v-icon>
+                          </v-btn>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <v-btn @click="addNewChildrentier()" color="primary" class="mr-4">Add New Childrentier</v-btn>
+                </v-row>
+
+                <v-row justify="space-around">
                   <v-col cols="12" md="5">
                     <v-select
                     v-model="roomSeason.id"
@@ -922,6 +966,11 @@ export default {
   },
   data () {
     return {
+      minMaxRules: [
+        v => !!v || 'This field is required',
+        v => (v && v >= 0) || 'should be equal 0 or more',
+        v => (v && v <= 100) || 'should be equal 100 or less'
+      ],
       cruise: null,
       editingCruise: null,
       startCity: {},
@@ -949,12 +998,26 @@ export default {
         categories: [],
         max_num_adult: null,
         max_num_children: null,
+        childrentiers: [
+          {
+            min: '',
+            max: '',
+            percentage: ''
+          }
+        ],
         package_hotel_room_season: []
       },
       roomSeason: {
         price_per_day: '',
         id: null
       },
+      childrentiers: [
+        {
+          min: '',
+          max: '',
+          percentage: ''
+        }
+      ],
       roomIndex: null,
       roomFormValid: true,
       mainImage: true,
@@ -1093,7 +1156,7 @@ export default {
         if (response.status === 200) {
           this.cruise = response.body.cruise
           this.cruise.childrenPolicies = response.body.cruiseChildrenPolicies
-          this.$store.state.childPolicies = response.body.cruiseChildrenPolicies[0]
+          // this.$store.state.childPolicies = response.body.cruiseChildrenPolicies[0]
           this.cruise.rooms.forEach(element => {
             if (!element.categories) element.categories = []
           })
@@ -1178,8 +1241,15 @@ export default {
             formData.append(`rooms[${i}][seasons][${j}][price_per_person]`, this.editingCruise.rooms[i].package_hotel_room_season[j].price_per_day)
           }
         }
+        for (let c = 0; c < this.editingCruise.rooms[i].childrentiers.length; c++) {
+          formData.append(`rooms[${i}][childrens][${c}][min]`, this.cruise.rooms[i].childrentiers[c].min)
+          formData.append(`rooms[${i}][childrens][${c}][max]`, this.cruise.rooms[i].childrentiers[c].max)
+          formData.append(`rooms[${i}][childrens][${c}][children_Percentage]`, this.cruise.rooms[i].childrentiers[c].percentage)
+        }
         // }
       }
+      formData.append('seo_title', this.editingCruise.seo_title)
+      formData.append('seo_description', this.editingCruise.seo_description)
       if (this.images.length > 0) {
         for (let i = 0; i < this.images.length; i++) {
           formData.append('images[]', this.images[i], this.images[i].name)
@@ -1206,6 +1276,13 @@ export default {
             categories: [],
             max_num_adult: null,
             max_num_children: null,
+            childrentiers: [
+              {
+                min: '',
+                max: '',
+                percentage: ''
+              }
+            ],
             package_hotel_room_season: []
           }
           this.image = null
@@ -1223,6 +1300,30 @@ export default {
         this.color = 'error'
         this.text = err.body.message
       })
+    },
+    addNewChildrentier () {
+      const childrentiersArr = this.room.childrentiers
+
+      if (childrentiersArr.length > 0) {
+        // const lastChildrenTier = childrentiersArr[childrentiersArr.length - 1]
+        // const newMin = lastChildrenTier.max ? parseInt(lastChildrenTier.max) + 1 : '' // Set the new min value to the previous max value
+        const newChildrenTier = {
+          min: '',
+          max: '',
+          price: ''
+        }
+        this.room.childrentiers.push(newChildrenTier)
+      } else {
+        // Add new pricing tier for the first tier
+        this.room.childrentiers.push({
+          min: '',
+          max: '',
+          percentage: ''
+        })
+      }
+    },
+    removeChildrenTier (index) {
+      this.room.childrentiers.splice(index, 1)
     }
   },
   created () {

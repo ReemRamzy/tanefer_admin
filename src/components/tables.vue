@@ -50,8 +50,18 @@
             color="blue white--text"
             class="mr-5"
             elevation="0"
+            v-if="type === 'seo'"
+            @click="$emit('addSEO')"
+            >
+              <v-icon left>mdi-plus</v-icon>
+              Add SEO
+            </v-btn>
+            <v-btn
+            color="blue white--text"
+            class="mr-5"
+            elevation="0"
             v-if="type === 'tours'"
-            @click="$emit('addTour')"
+            @click="$router.push({ name: 'addPackage' })"
             >
               <v-icon left>mdi-plus</v-icon>
               Add Tour
@@ -73,7 +83,7 @@
             :dense="type !== 'tours'"
             >
               <template v-slot:top>
-                <v-text-field v-if="type !== 'packageBookings' && type !== 'activitiesBookings'" v-model="search" label="Search" class="mx-4"></v-text-field>
+                <v-text-field v-if="type !== 'packageBookings' && type !== 'activitiesBookings' && type !== 'cruisesBookings' && type !== 'hotelsBookings'" v-model="search" label="Search" class="mx-4"></v-text-field>
               </template>
 
               <!-- cities -->
@@ -85,6 +95,20 @@
               <template v-if="type === 'cities'" v-slot:item.removeCityById="{ item }">
                 <v-btn text color="error" @click="$emit('removeCity', item.id)">
                   <v-icon left>mdi-trash-can-outline</v-icon> Remove
+                </v-btn>
+              </template>
+
+              <!-- SEO -->
+              <template v-if="type === 'seo'" v-slot:item.featured_image="{ item }">
+                <img
+                :src="item.featured_image"
+                alt="SEO Image"
+                width="50"
+                >
+              </template>
+              <template v-if="type === 'seo'" v-slot:item.editSEO="{ item }">
+                <v-btn text color="blue" @click="$emit('updateSEO', item)">
+                  <v-icon left>mdi-pencil</v-icon> Update
                 </v-btn>
               </template>
 
@@ -157,6 +181,9 @@
               <template v-if="type === 'cruises'" v-slot:item.name="{ item }">
                 <v-btn text small color="blue lighten--1" @click="$router.push({name: 'cruise', params: {id: item.id}})">{{ item.name }}</v-btn>
               </template>
+              <template v-if="type === 'cruises'" v-slot:item.removeAct="{ item }">
+                <v-btn text color="error" @click="$emit('removeCruise', item.id)">Remove</v-btn>
+              </template>
 
               <!-- package bookings -->
               <template v-if="type === 'packageBookings'" v-slot:item.packageId="{ item }">
@@ -171,12 +198,22 @@
               <template v-if="type === 'activitiesBookings'" v-slot:item.id="{ item }">
                 <v-btn text small color="blue lighten--1" @click="$router.push({name: 'activityBooking', params: {id: item.id}})">{{ item.id }}</v-btn>
               </template>
+              
+              <!-- cruises bookings -->
+              <template v-else-if="type === 'cruisesBookings'" v-slot:item.id="{ item }">
+                <v-btn text small color="blue lighten--1" @click="$router.push({name: 'cruiseBooking', params: {id: item.id}})">{{ item.id }}</v-btn>
+              </template>
+
+              <!-- hotel bookings -->
+              <template v-else-if="type === 'hotelsBookings'" v-slot:item.id="{ item }">
+                <v-btn text small color="blue lighten--1" @click="$router.push({name: 'hotelBooking', params: {id: item.id}})">{{ item.id }}</v-btn>
+              </template>
             </v-data-table>
         </v-card-text>
 
         <v-divider></v-divider>
 
-        <v-card-actions v-if="type === 'hotels' || type === 'activities' || type === 'tours'">
+        <v-card-actions v-if="type === 'hotels' || type === 'activities' || type === 'tours' || type === 'cruises'">
           <v-subheader>Page {{page}}</v-subheader>
           <v-spacer></v-spacer>
           <v-pagination
@@ -208,6 +245,9 @@ export default {
         case 'cities':
           title = { icon: 'mdi-city', title: 'Trips Cities' }
           break
+        case 'seo':
+          title = { icon: 'mdi-web', title: 'SEO' }
+          break
         case 'tours':
           title = { icon: 'mdi-beach', title: 'Packages' }
           break
@@ -225,6 +265,12 @@ export default {
           break
         case 'activitiesBookings':
           title = { icon: 'mdi-hail', title: 'Adventures Bookings' }
+          break
+        case 'cruisesBookings':
+          title = { icon: 'mdi-hail', title: 'Cruises Bookings' }
+          break
+        case 'hotelsBookings':
+          title = { icon: 'mdi-hail', title: 'Hotels Bookings' }
           break
       }
       return title
@@ -245,7 +291,7 @@ export default {
     },
     goToRoute (id) {
       let route
-      if (this.type === 'tours') route = 'tour'
+      if (this.type === 'tours') route = 'editPackage'
       else if (this.type === 'hotels') route = 'hotel'
       this.$router.push({ name: route, params: { id: id } })
     }
