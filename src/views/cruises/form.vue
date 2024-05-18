@@ -157,31 +157,27 @@
                     >
                     </v-select>
                     <v-divider></v-divider>
-                    <v-card class="my-4 pa-4 text-center" v-for="(cruise, index) in cruise.images"  :key="index">
-                      
-                      <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium',padding: '1rem',fontSize: '20px' } "
-                    
-                      > image{{ index +1 }} </h1>
+                    <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in cruise.images"  :key="index">
+                      <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
+                      > image{{ imageData.sort }} </h1>
                       <v-row>
                         <v-col cols="12" sm="9">
                        <v-file-input
-                      v-model="cruise.master_image"
+                      v-model="imageData.image"
                       accept="image/*"
                       label="Cruise Image"
                       :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
                       color="blue"
                       outlined
                       show-size
-
                       >
-
                       </v-file-input>
                     </v-col>
                     <v-col cols="12" sm="3">
                       <v-text-field
-                      v-model="sort_image"
+                      v-model="imageData.sort"
                       label="sort image"
-                      type="number" 
+                      type="number"
                       outlined
                       :rules="[v => !!v || 'item is required', v => v.length === 1 || ' you have limit data', v => /^[1-9]*$/.test(v) || 'value must be start from 1']"
                       min="1"
@@ -191,11 +187,9 @@
                     </v-col>
                   </v-row>
                     <v-btn @click="removeImage(index)" color="red">Remove Image</v-btn>
-
                   </v-card>
                   <v-divider></v-divider>
                   <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
-                 
                     <!-- api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4" -->
                     <editor
                     v-model="cruise.description"
@@ -827,170 +821,51 @@
 import { headers, storeCruise, formLists } from '../../links'
 import Editor from '@tinymce/tinymce-vue'
 import dateDisplay from '../../components/dateDisplay'
-import { h } from 'vue';
 
 export default {
-components: {
-  editor: Editor,
-  dateDisplay
-},
-data () {
-  return {
-     minMaxRules: [
-      v => !!v || 'This field is required',
-      v => (v && v >= 0) || 'should be equal 0 or more',
-      v => (v && v <= 100) || 'should be equal 100 or less'
-    ],
-
-      snackbar: false,
-    color: '',
-    text: '',
-    step: 1,
-    basicFormValid: true,
-    detailsFormValid: true,
-    roomsFormValid: true,
-    cruise: {
-      name: '',
-      cruise_line: '',
-      ship_name: '',
-      facilities: [],
-      includes: [],
-      excludes: [],
-      description: '',
-      policies: [],
-      stars: '0',
-      start_city_id: '',
-      cities_ids: [],
-      start_days: [],
-      master_image: null,
-      city_id: null,
-      number_of_nights: 1,
-      images: [],
-      sort:[],
-      rooms: [],
-      seo_title: '',
-      seo_description: ''
-
-    },
-    room: {
-      type: '',
-      occupancy: 'single',
-      inclusions: [],
-      amenities: [],
-      categories: [],
-      max_num_adult: null,
-      max_num_children: null,
-      childrentiers: [
-        {
-          min: '',
-          max: '',
-          percentage: ''
-        }
+  components: {
+    editor: Editor,
+    dateDisplay
+  },
+  data () {
+    return {
+      minMaxRules: [
+        v => !!v || 'This field is required',
+        v => (v && v >= 0) || 'should be equal 0 or more',
+        v => (v && v <= 100) || 'should be equal 100 or less'
       ],
-      seasons: []
-    },
-    roomSeason: {
-      id: null,
-      price_per_person: ''
-    },
-    facility: '',
-    policy: '',
-    inclusion: '',
-    exclusion: '',
-    room_inclusion: '',
-    room_aminity: '',
-    room_category: '',
-    cities: [],
-    seasons: [],
-    addCruiseLoading: false
-  }
-  showNumImg: []
-},
-methods: {
-  addFacility () {
-    if (this.facility) {
-      this.cruise.facilities.push(this.facility)
-      this.facility = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide a facility before submitting'
-    }
-  },
-  addPolicy () {
-    if (this.policy) {
-      this.cruise.policies.push(this.policy)
-      this.policy = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide a policye before submitting'
-    }
-  },
-  addInclusion () {
-    if (this.inclusion) {
-      this.cruise.includes.push(this.inclusion)
-      this.inclusion = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide includes before submitting'
-    }
-  },
-  addExclusion () {
-    if (this.exclusion) {
-      this.cruise.excludes.push(this.exclusion)
-      this.exclusion = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide excludes before submitting'
-    }
-  },
-  addRoomInclusions () {
-    if (this.room_inclusion) {
-      this.room.inclusions.push(this.room_inclusion)
-      this.room_inclusion = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide inclusions before submitting'
-    }
-  },
-  addRoomAminities () {
-    if (this.room_aminity) {
-      this.room.amenities.push(this.room_aminity)
-      this.room_aminity = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide aminities before submitting'
-    }
-  },
-  addRoomCategories () {
-    if (this.room_category) {
-      this.room.categories.push(this.room_category)
-      this.room_category = ''
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please provide Categories before submitting'
-    }
-  },
-  addRoomSeason () {
-    this.room.seasons.push(this.roomSeason)
-    this.roomSeason = {
-      id: null,
-      price_per_person: ''
-    }
-  },
-  addRoom () {
-    this.$refs.roomsForm.validate()
-    if (this.roomsFormValid) {
-      const room = this.room
-      this.cruise.rooms.push(room)
-      this.room = {
+      snackbar: false,
+      color: '',
+      text: '',
+      step: 1,
+      basicFormValid: true,
+      detailsFormValid: true,
+      roomsFormValid: true,
+      cruise: {
+        name: '',
+        cruise_line: '',
+        ship_name: '',
+        facilities: [],
+        includes: [],
+        excludes: [],
+        description: '',
+        policies: [],
+        stars: '0',
+        start_city_id: '',
+        cities_ids: [],
+        start_days: [],
+        master_image: null,
+        city_id: null,
+        number_of_nights: 1,
+        images: [],
+        sort: [],
+        rooms: [],
+        seo_title: '',
+        seo_description: ''
+      },
+      room: {
         type: '',
+        occupancy: 'single',
         inclusions: [],
         amenities: [],
         categories: [],
@@ -1003,171 +878,266 @@ methods: {
             percentage: ''
           }
         ],
-        price_per_day: null,
         seasons: []
-      }
-      this.$refs.roomsForm.resetValidation()
-    } else {
-      this.snackbar = true
-      this.color = 'error'
-      this.text = 'Please fill all room fields'
+      },
+      roomSeason: {
+        id: null,
+        price_per_person: ''
+      },
+      facility: '',
+      policy: '',
+      inclusion: '',
+      exclusion: '',
+      room_inclusion: '',
+      room_aminity: '',
+      room_category: '',
+      cities: [],
+      seasons: [],
+      addCruiseLoading: false
     }
   },
-  addCruise () {
-    const formData = new FormData()
-    formData.append('_method', 'POST')
-    formData.append('name', this.cruise.name)
-    formData.append('cruise_line', this.cruise.cruise_line)
-    formData.append('number_of_nights', this.cruise.number_of_nights)
-    for (let i = 0; i < this.cruise.policies.length; i++) {
-      formData.append('policies[]', this.cruise.policies[i])
-    }
-    for (let i = 0; i < this.cruise.facilities.length; i++) {
-      formData.append('facilities[]', this.cruise.facilities[i])
-    }
-    for (let i = 0; i < this.cruise.includes.length; i++) {
-      formData.append('includes[]', this.cruise.includes[i])
-    }
-    for (let i = 0; i < this.cruise.excludes.length; i++) {
-      formData.append('excludes[]', this.cruise.excludes[i])
-    }
-    formData.append('stars', this.cruise.stars)
-    formData.append('ship_name', this.cruise.ship_name)
-    formData.append('description', this.cruise.description)
-    formData.append('start_city_id', this.cruise.start_city_id)
-    for (let i = 0; i < this.cruise.cities_ids.length; i++) {
-      formData.append('cities_ids[]', this.cruise.cities_ids[i])
-    }
-    for (let i = 0; i < this.cruise.start_days.length; i++) {
-      formData.append('start_days[]', this.cruise.start_days[i])
-    }
-    formData.append('master_image', this.cruise.master_image, this.cruise.master_image.name)
-    for (let i = 0; i < this.cruise.rooms.length; i++) {
-      formData.append(`rooms[${i}][type]`, this.cruise.rooms[i].type)
-      formData.append(`rooms[${i}][occupancy]`, this.cruise.rooms[i].occupancy)
-      for (let j = 0; j < this.cruise.rooms[i].inclusions.length; j++) {
-        formData.append(`rooms[${i}][inclusions][]`, this.cruise.rooms[i].inclusions[j])
-      }
-      for (let j = 0; j < this.cruise.rooms[i].amenities.length; j++) {
-        formData.append(`rooms[${i}][amenities][]`, this.cruise.rooms[i].amenities[j])
-      }
-      for (let j = 0; j < this.cruise.rooms[i].categories.length; j++) {
-        formData.append(`rooms[${i}][categories][]`, this.cruise.rooms[i].categories[j])
-      }
-      formData.append(`rooms[${i}][max_num_adult]`, this.cruise.rooms[i].max_num_adult)
-      formData.append(`rooms[${i}][max_num_children]`, this.cruise.rooms[i].max_num_children)
-      for (let j = 0; j < this.cruise.rooms[i].seasons.length; j++) {
-        formData.append(`rooms[${i}][seasons][${j}][id]`, this.cruise.rooms[i].seasons[j].id)
-        formData.append(`rooms[${i}][seasons][${j}][price_per_person]`, this.cruise.rooms[i].seasons[j].price_per_person)
-      }
-      for (let c = 0; c < this.cruise.rooms[i].childrentiers.length; c++) {
-        formData.append(`rooms[${i}][childrens][${c}][min]`, this.cruise.rooms[i].childrentiers[c].min)
-        formData.append(`rooms[${i}][childrens][${c}][max]`, this.cruise.rooms[i].childrentiers[c].max)
-        formData.append(`rooms[${i}][childrens][${c}][children_Percentage]`, this.cruise.rooms[i].childrentiers[c].percentage)
-      }
-      // formData.append(`rooms[${i}][season_id]`, this.cruise.rooms[i].season_id)
-    }
-    for (let i = 0; i < this.cruise.images.length; i++) {
-      formData.append('images[]', this.cruise.images[i], this.cruise.images[i].name)
-      formData.append('sort[]',this.cruise.sort)
-    }
-    formData.append('seo_title', this.cruise.seo_title)
-    formData.append('seo_description', this.cruise.seo_description)
-    this.addCruiseLoading = true
-
-    this.$http.post(storeCruise, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
-      console.log(response)
-      this.addcruiseLoading = false
-      if (response.status === 200) {
-        this.snackbar = true
-        this.color = 'success'
-        this.text = 'Cruise was added successfully'
-        this.$router.push({ name: 'cruises' })
+  methods: {
+    addFacility () {
+      if (this.facility) {
+        this.cruise.facilities.push(this.facility)
+        this.facility = ''
       } else {
         this.snackbar = true
         this.color = 'error'
-        this.text = response.body.data.message
-        this.addCruiseLoading = false
+        this.text = 'Please provide a facility before submitting'
       }
-    }, err => {
-      this.addCruiseLoading = false
-      this.snackbar = true
-      this.color = 'error'
-      this.text = err.body.errors
-    }).finally(() => {
-      this.addCruiseLoading = false
-    })
-  },
-  addNewChildrentier () {
-    const childrentiersArr = this.room.childrentiers
-
-    if (childrentiersArr.length > 0) {
-      const lastChildrenTier = childrentiersArr[childrentiersArr.length - 1]
-      const newMin = lastChildrenTier.max ? parseInt(lastChildrenTier.max) + 1 : '' // Set the new min value to the previous max value
-      const newChildrenTier = {
-        name: '',
-        min: newMin,
-        max: '',
-        adult_price: '',
-        child_percentage: ''
+    },
+    addPolicy () {
+      if (this.policy) {
+        this.cruise.policies.push(this.policy)
+        this.policy = ''
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please provide a policye before submitting'
       }
-      this.room.childrentiers.push(newChildrenTier)
-    } else {
-      // Add new pricing tier for the first tier
-      this.room.childrentiers.push({
-        min: '',
-        max: '',
-        percentage: ''
+    },
+    addInclusion () {
+      if (this.inclusion) {
+        this.cruise.includes.push(this.inclusion)
+        this.inclusion = ''
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please provide includes before submitting'
+      }
+    },
+    addExclusion () {
+      if (this.exclusion) {
+        this.cruise.excludes.push(this.exclusion)
+        this.exclusion = ''
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please provide excludes before submitting'
+      }
+    },
+    addRoomInclusions () {
+      if (this.room_inclusion) {
+        this.room.inclusions.push(this.room_inclusion)
+        this.room_inclusion = ''
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please provide inclusions before submitting'
+      }
+    },
+    addRoomAminities () {
+      if (this.room_aminity) {
+        this.room.amenities.push(this.room_aminity)
+        this.room_aminity = ''
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please provide aminities before submitting'
+      }
+    },
+    addRoomCategories () {
+      if (this.room_category) {
+        this.room.categories.push(this.room_category)
+        this.room_category = ''
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please provide Categories before submitting'
+      }
+    },
+    addRoomSeason () {
+      this.room.seasons.push(this.roomSeason)
+      this.roomSeason = {
+        id: null,
+        price_per_person: ''
+      }
+    },
+    addRoom () {
+      this.$refs.roomsForm.validate()
+      if (this.roomsFormValid) {
+        const room = this.room
+        this.cruise.rooms.push(room)
+        this.room = {
+          type: '',
+          inclusions: [],
+          amenities: [],
+          categories: [],
+          max_num_adult: null,
+          max_num_children: null,
+          childrentiers: [
+            {
+              min: '',
+              max: '',
+              percentage: ''
+            }
+          ],
+          price_per_day: null,
+          seasons: []
+        }
+        this.$refs.roomsForm.resetValidation()
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please fill all room fields'
+      }
+    },
+    addCruise () {
+      const formData = new FormData()
+      formData.append('_method', 'POST')
+      formData.append('name', this.cruise.name)
+      formData.append('cruise_line', this.cruise.cruise_line)
+      formData.append('number_of_nights', this.cruise.number_of_nights)
+      for (let i = 0; i < this.cruise.policies.length; i++) {
+        formData.append('policies[]', this.cruise.policies[i])
+      }
+      for (let i = 0; i < this.cruise.facilities.length; i++) {
+        formData.append('facilities[]', this.cruise.facilities[i])
+      }
+      for (let i = 0; i < this.cruise.includes.length; i++) {
+        formData.append('includes[]', this.cruise.includes[i])
+      }
+      for (let i = 0; i < this.cruise.excludes.length; i++) {
+        formData.append('excludes[]', this.cruise.excludes[i])
+      }
+      formData.append('stars', this.cruise.stars)
+      formData.append('ship_name', this.cruise.ship_name)
+      formData.append('description', this.cruise.description)
+      formData.append('start_city_id', this.cruise.start_city_id)
+      for (let i = 0; i < this.cruise.cities_ids.length; i++) {
+        formData.append('cities_ids[]', this.cruise.cities_ids[i])
+      }
+      for (let i = 0; i < this.cruise.start_days.length; i++) {
+        formData.append('start_days[]', this.cruise.start_days[i])
+      }
+      formData.append('master_image', this.cruise.master_image, this.cruise.master_image.name)
+      for (let i = 0; i < this.cruise.rooms.length; i++) {
+        formData.append(`rooms[${i}][type]`, this.cruise.rooms[i].type)
+        formData.append(`rooms[${i}][occupancy]`, this.cruise.rooms[i].occupancy)
+        for (let j = 0; j < this.cruise.rooms[i].inclusions.length; j++) {
+          formData.append(`rooms[${i}][inclusions][]`, this.cruise.rooms[i].inclusions[j])
+        }
+        for (let j = 0; j < this.cruise.rooms[i].amenities.length; j++) {
+          formData.append(`rooms[${i}][amenities][]`, this.cruise.rooms[i].amenities[j])
+        }
+        for (let j = 0; j < this.cruise.rooms[i].categories.length; j++) {
+          formData.append(`rooms[${i}][categories][]`, this.cruise.rooms[i].categories[j])
+        }
+        formData.append(`rooms[${i}][max_num_adult]`, this.cruise.rooms[i].max_num_adult)
+        formData.append(`rooms[${i}][max_num_children]`, this.cruise.rooms[i].max_num_children)
+        for (let j = 0; j < this.cruise.rooms[i].seasons.length; j++) {
+          formData.append(`rooms[${i}][seasons][${j}][id]`, this.cruise.rooms[i].seasons[j].id)
+          formData.append(`rooms[${i}][seasons][${j}][price_per_person]`, this.cruise.rooms[i].seasons[j].price_per_person)
+        }
+        for (let c = 0; c < this.cruise.rooms[i].childrentiers.length; c++) {
+          formData.append(`rooms[${i}][childrens][${c}][min]`, this.cruise.rooms[i].childrentiers[c].min)
+          formData.append(`rooms[${i}][childrens][${c}][max]`, this.cruise.rooms[i].childrentiers[c].max)
+          formData.append(`rooms[${i}][childrens][${c}][children_Percentage]`, this.cruise.rooms[i].childrentiers[c].percentage)
+        }
+        // formData.append(`rooms[${i}][season_id]`, this.cruise.rooms[i].season_id)
+      }
+      // for (let i = 0; i < this.cruise.images.length; i++) {
+      //   formData.append('images[]', this.cruise.images[i], this.cruise.images[i].name)
+      //   formData.append('sort[]', this.cruise.sort)
+      // }
+      this.cruise.images.forEach((imageData, index) => {
+        formData.append(`images[${index}][image]`, imageData.image ? imageData.image : null)
+        formData.append(`images[${index}][sort]`, imageData.sort ? imageData.sort : index + 1)
       })
-    }
-  },
-  removeChildrenTier (index) {
-    this.room.childrentiers.splice(index, 1)
-  },
-  addNewimage () {
-    // Validate the date before adding a new availability
-            // console.log()
-            const numImage = this.cruise.images
-            const showNumImg=numImage.length+1
-            this.showNumImg=showNumImg
-                    // console.log(showNumImg)
+      formData.append('seo_title', this.cruise.seo_title)
+      formData.append('seo_description', this.cruise.seo_description)
+      this.addCruiseLoading = true
 
+      this.$http.post(storeCruise, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
+        console.log(response)
+        this.addcruiseLoading = false
+        if (response.status === 200) {
+          this.snackbar = true
+          this.color = 'success'
+          this.text = 'Cruise was added successfully'
+          this.$router.push({ name: 'cruises' })
+        } else {
+          this.snackbar = true
+          this.color = 'error'
+          this.text = response.body.data.message
+          this.addCruiseLoading = false
+        }
+      }, err => {
+        this.addCruiseLoading = false
+        this.snackbar = true
+        this.color = 'error'
+        this.text = err.body.errors
+      }).finally(() => {
+        this.addCruiseLoading = false
+      })
+    },
+    addNewChildrentier () {
+      const childrentiersArr = this.room.childrentiers
 
-    if (numImage > 0) {
-      const newImage = this.cruise.images[numImage - 1]
-      // console.log(newImage)
-
-    } else {
-      // Add new image 
-      const newImage = {
-        images:''
+      if (childrentiersArr.length > 0) {
+        const lastChildrenTier = childrentiersArr[childrentiersArr.length - 1]
+        const newMin = lastChildrenTier.max ? parseInt(lastChildrenTier.max) + 1 : '' // Set the new min value to the previous max value
+        const newChildrenTier = {
+          name: '',
+          min: newMin,
+          max: '',
+          adult_price: '',
+          child_percentage: ''
+        }
+        this.room.childrentiers.push(newChildrenTier)
+      } else {
+        // Add new pricing tier for the first tier
+        this.room.childrentiers.push({
+          min: '',
+          max: '',
+          percentage: ''
+        })
       }
-
-       this.cruise.images.push(newImage)
+    },
+    removeChildrenTier (index) {
+      this.room.childrentiers.splice(index, 1)
+    },
+    addNewimage () {
+      const countImages = this.cruise.images.length
+      const newImage = {
+        image: null,
+        sort: countImages + 1
+      }
+      this.cruise.images.push(newImage)
+    },
+    removeImage (imageIndex) {
+      this.cruise.images.splice(imageIndex, 1)
     }
   },
-  removeImage (imageIndex) {
-    this.cruise.images.splice(imageIndex, 1)
-  },
-//      render() {
-//   return h(
-//     'div',
-//     Array.from({ length: 20 }).map(() => {
-//       return h('p', 'hi')
-//     })
-//   )
-// }
-
-  
-},
-beforeCreate () {
-  this.$http.get(formLists, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
-    if (response.body.status === 200) {
-      this.cities = response.body.data.cities
-      this.seasons = response.body.data.seasons
-    }
-  })
-},
+  beforeCreate () {
+    this.$http.get(formLists, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
+      if (response.body.status === 200) {
+        this.cities = response.body.data.cities
+        this.seasons = response.body.data.seasons
+      }
+    })
+  }
 
 }
 </script>
