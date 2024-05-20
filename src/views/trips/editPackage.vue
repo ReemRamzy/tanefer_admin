@@ -293,8 +293,8 @@
                         <v-btn @click="masterImageDialog = true; " color="primary" class="mb-4 mt-2">edit image</v-btn>
                         <v-dialog persistent max-width="1000" v-model="masterImageDialog">
                         <v-card class="pa-5">
-                        <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in this.images"  :key="index">
-                          <v-img max-width="30%" class="text-center"  :key="index" :src="imageData.images" max-height="150"></v-img>
+                        <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in this.tour.images"  :key="index">
+                          <v-img max-width="30%" class="text-center"  :key="index" :src="imageData.image" max-height="150"></v-img>
                           <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium',padding: '1rem',fontSize: '20px' } "
                           > image {{ imageData.sort ? imageData.sort : index + 1 }} </h1>
                           <v-row>
@@ -303,7 +303,7 @@
                           v-model="imageData.file"
                           accept="image/*"
                           label="package Extra Images"
-                          :rules="[v => !!v || 'Please insert a photo',  value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                          :rules="[value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
                           color="blue"
                           outlined
                           show-size
@@ -316,7 +316,7 @@
                           label="sort image"
                           type="number"
                           outlined
-                          :rules="[v => !!v || 'Item is required',v => isUniqueSort(v),  v => v.length === 1]"
+                          :rules="[v => !!v || 'Item is required', v => isUniqueSort(v), v => v > 0]"
                           min="1"
                           color="blue"
                           >
@@ -332,9 +332,9 @@
                       <v-divider></v-divider>
                       <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
                         <v-card-actions>
-                          <v-btn text color="warning" @click="image = null; image = []; masterImageDialog = false; updatePackageLoading = false;" :disabled="!images">Cancel</v-btn>
-                          <v-spacer></v-spacer>
-                          <v-btn  tile color="success white--text" @click="updateImagePackage" :loading="updatePackageLoading" :disabled="!hasImages" >Update Image</v-btn>
+                          <v-btn text color="warning" @click="masterImageDialog = false; updatePackageLoading = false;">Cancel</v-btn>
+                          <!-- <v-spacer></v-spacer>
+                          <v-btn  tile color="success white--text" @click="updateImagePackage" :loading="updatePackageLoading" :disabled="!hasImages" >Update Image</v-btn> -->
                         </v-card-actions>
                         </v-card>
                         </v-dialog>
@@ -988,7 +988,8 @@ export default {
         includes: [],
         excludes: [],
         discountPercent: 0,
-        accommodation: []
+        accommodation: [],
+        images: []
       },
       editingTour: null,
       imageDialog: false,
@@ -1074,7 +1075,7 @@ export default {
   },
   computed: {
     hasImages () {
-      return this.images.length > 0
+      return this.tour.images.length > 0
     }
   },
   methods: {
@@ -1162,6 +1163,7 @@ export default {
           this.tour.packageMetaDesc = dataResponse.packageMetaDesc
           this.adventure_or_cruise = getActivities
           this.tour.accommodation = getListHotelsGta
+          this.tour.images = dataResponse.packageImages
           this.updateAdventureCruise()
           this.calcTotalNumberOfDays()
         }
@@ -1635,14 +1637,14 @@ export default {
         }
       }
 
-      // if (this.image) formData.append('cover_image', this.image, this.image.name)
+      if (this.image) formData.append('cover_image', this.image, this.image.name)
       // for (let i = 0; i < this.images.length; i++) {
       //   formData.append('images[' + i + ']', this.images[i], this.images[i].name)
       // }
-      this.images.forEach((imageData, index) => {
-        formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
-        formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
-        formData.append(`images[sort][${index}]`, imageData.sort ? imageData.sort : index + 1)
+      this.tour.images.forEach((imageData, index) => {
+        formData.append(`images[${index}][id]`, imageData.id ? imageData.id : null)
+        formData.append(`images[${index}][file]`, imageData.file ? imageData.file : null)
+        formData.append(`images[${index}][sort]`, imageData.sort ? imageData.sort : index + 1)
       })
 
       // cruiseID
@@ -1686,15 +1688,15 @@ export default {
         this.changeCruiseDialog = false
       })
     },
-    // updateImagePackage () {
-    //   this.updatePackageLoading = true
-    //   const formData = new FormData()
-    //   this.images.forEach((imageData, index) => {
-    //     formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
-    //     formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
-    //     formData.append(`images[sort][${index}]`, imageData.sort ? imageData.sort : index + 1)
-    //   })
-    // },
+    updateImagePackage () {
+      this.updatePackageLoading = true
+      const formData = new FormData()
+      this.tour.images.forEach((imageData, index) => {
+        formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
+        formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
+        formData.append(`images[sort][${index}]`, imageData.sort ? imageData.sort : index + 1)
+      })
+    },
     updateAdventureCruise () {
       this.day_number_start = 0
       for (let x = 0; x < this.adventure_or_cruise.length; x++) {
@@ -1760,14 +1762,14 @@ export default {
       this.gtaHotels.splice(hotelIndex, 1)
     },
     addNewimage () {
-      this.images.push({
+      this.tour.images.push({
         image: null,
         file: null,
         sort: null
       })
     },
     removeImage (imageIndex) {
-      this.images.splice(imageIndex, 1)
+      this.tour.images.splice(imageIndex, 1)
     },
     isUniqueSort (value) {
       if (value === null || value === undefined) {

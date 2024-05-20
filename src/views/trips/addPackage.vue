@@ -434,7 +434,7 @@
                             label="sort image"
                             type="number"
                             outlined
-                            :rules="[v => !!v || 'item is required',  v => v.length === 1 ]"
+                            :rules="[v => !!v || 'item is required',  v => v.length > 0 ]"
                             color="blue"
                             >
                             </v-text-field>
@@ -1498,7 +1498,9 @@ export default {
         }
       }).catch(error => {
         console.log(error)
-      }).finally()
+      }).finally(final => {
+        // console.log(final)
+      });
     },
     addTour () {
       this.addHotelLoading = true
@@ -1515,7 +1517,7 @@ export default {
       formData.append('meta_title', this.tour.packageMetaTitle)
       formData.append('meta_desc', this.tour.packageMetaDesc)
       this.images.forEach((imageData, index) => {
-        formData.append(`images[${index}][image]`, imageData.image ? imageData.image : null)
+        formData.append(`images[${index}][file]`, imageData.image ? imageData.image : null)
         formData.append(`images[${index}][sort]`, imageData.sort ? imageData.sort : index + 1)
       })
       if (this.tour.is_top) formData.append('is_top', this.tour.is_top ? 1 : 0)
@@ -1575,9 +1577,9 @@ export default {
 
       if (this.image) formData.append('package_image', this.image, this.image.name)
 
-      for (let i = 0; i < this.images.length; i++) {
-        formData.append('images[' + i + ']', this.images[i], this.images[i].name)
-      }
+      // for (let i = 0; i < this.images.length; i++) {
+      //   formData.append('images[' + i + ']', this.images[i], this.images[i].name)
+      // }
 
       // cruiseID
       if (this.cruiseID) formData.append('cruise_id', this.cruiseID)
@@ -1871,7 +1873,7 @@ export default {
       const countImages = this.images.length
       const newImage = {
         image: null,
-        sort: countImages + 1
+        sort: null
       }
       this.images.push(newImage)
     },
