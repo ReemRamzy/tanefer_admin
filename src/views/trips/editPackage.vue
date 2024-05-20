@@ -290,18 +290,54 @@
                         @change="clearImageOnRemove"
                         >
                         </v-file-input>
-
-                        <v-file-input
-                        v-model="images"
-                        accept="image/*"
-                        label="Package Images"
-                        color="blue"
-                        outlined
-                        show-size
-                        multiple
-                        >
-                        </v-file-input>
-
+                        <v-btn @click="masterImageDialog = true; " color="primary" class="mb-4 mt-2">edit image</v-btn>
+                        <v-dialog persistent max-width="1000" v-model="masterImageDialog">
+                        <v-card class="pa-5">
+                        <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in this.images"  :key="index">
+                          <v-img max-width="30%" class="text-center"  :key="index" :src="imageData.images" max-height="150"></v-img>
+                          <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium',padding: '1rem',fontSize: '20px' } "
+                          > image {{ imageData.sort ? imageData.sort : index + 1 }} </h1>
+                          <v-row>
+                            <v-col cols="12" sm="9">
+                           <v-file-input
+                          v-model="imageData.file"
+                          accept="image/*"
+                          label="package Extra Images"
+                          :rules="[v => !!v || 'Please insert a photo',  value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                          color="blue"
+                          outlined
+                          show-size
+                          >
+                          </v-file-input>
+                        </v-col>
+                        <v-col cols="12" sm="2">
+                          <v-text-field
+                          v-model="imageData.sort"
+                          label="sort image"
+                          type="number"
+                          outlined
+                          :rules="[v => !!v || 'Item is required',v => isUniqueSort(v),  v => v.length === 1]"
+                          min="1"
+                          color="blue"
+                          >
+                          </v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="1">
+                        <v-btn @click="removeImage(index)" color="red" icon elevation="4" style="margin-bottom: -25px;">
+                          <v-icon>mdi-close</v-icon>
+                        </v-btn>
+                        </v-col>
+                      </v-row>
+                      </v-card>
+                      <v-divider></v-divider>
+                      <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
+                        <v-card-actions>
+                          <v-btn text color="warning" @click="image = null; image = []; masterImageDialog = false; updatePackageLoading = false;" :disabled="!images">Cancel</v-btn>
+                          <v-spacer></v-spacer>
+                          <v-btn  tile color="success white--text" @click="updateImagePackage" :loading="updatePackageLoading" :disabled="!hasImages" >Update Image</v-btn>
+                        </v-card-actions>
+                        </v-card>
+                        </v-dialog>
                         <v-text-field
                         label="Slug"
                         v-model="tour.slug"
@@ -955,6 +991,8 @@ export default {
         accommodation: []
       },
       editingTour: null,
+      imageDialog: false,
+      masterImageDialog: false,
       image: null,
       images: [],
       cityID: '',
@@ -1034,7 +1072,11 @@ export default {
       selectHotels: []
     }
   },
-  computed: {},
+  computed: {
+    hasImages () {
+      return this.images.length > 0
+    }
+  },
   methods: {
     getTour () {
       this.$http.get(showPackage(this.$route.params.id), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
@@ -1593,11 +1635,15 @@ export default {
         }
       }
 
-      if (this.image) formData.append('cover_image', this.image, this.image.name)
-
-      for (let i = 0; i < this.images.length; i++) {
-        formData.append('images[' + i + ']', this.images[i], this.images[i].name)
-      }
+      // if (this.image) formData.append('cover_image', this.image, this.image.name)
+      // for (let i = 0; i < this.images.length; i++) {
+      //   formData.append('images[' + i + ']', this.images[i], this.images[i].name)
+      // }
+      this.images.forEach((imageData, index) => {
+        formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
+        formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
+        formData.append(`images[sort][${index}]`, imageData.sort ? imageData.sort : index + 1)
+      })
 
       // cruiseID
       if (this.cruiseID) formData.append('cruise_id', this.cruiseID)
@@ -1620,6 +1666,8 @@ export default {
           this.text = 'Package data was updated successfully'
           this.basicDialog = false
           this.loading = true
+          this.imageDialog = false
+          this.masterImageDialog = false
           this.addCityDialog = false
           this.changeCruiseDialog = false
           this.getTour()
@@ -1638,6 +1686,15 @@ export default {
         this.changeCruiseDialog = false
       })
     },
+    // updateImagePackage () {
+    //   this.updatePackageLoading = true
+    //   const formData = new FormData()
+    //   this.images.forEach((imageData, index) => {
+    //     formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
+    //     formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
+    //     formData.append(`images[sort][${index}]`, imageData.sort ? imageData.sort : index + 1)
+    //   })
+    // },
     updateAdventureCruise () {
       this.day_number_start = 0
       for (let x = 0; x < this.adventure_or_cruise.length; x++) {
@@ -1701,6 +1758,23 @@ export default {
       this.tour.accommodation.splice(hotelIndex, 1)
       this.selectedGtaCity.splice(hotelIndex, 1)
       this.gtaHotels.splice(hotelIndex, 1)
+    },
+    addNewimage () {
+      this.images.push({
+        image: null,
+        file: null,
+        sort: null
+      })
+    },
+    removeImage (imageIndex) {
+      this.images.splice(imageIndex, 1)
+    },
+    isUniqueSort (value) {
+      if (value === null || value === undefined) {
+        return 'Sort value is required'
+      }
+      const sortValues = this.images.map(image => image.sort).filter(sort => sort !== null && sort !== undefined)
+      return sortValues.filter(sort => sort === value).length <= 1 || 'Sort value must be unique'
     }
   },
   mounted () {

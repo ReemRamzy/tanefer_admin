@@ -255,7 +255,7 @@
                           Room Rate Per Night
                           </th> -->
                           <th class="text-left" style="min-width: 400px; !important">
-                          Room Season
+                                Room Season
                           </th>
                           <th class="text-right">
                           Update
@@ -670,7 +670,7 @@
             label="sort image"
             type="number"
             outlined
-            :rules="[v => !!v || 'Item is required', v => isUniqueSort(v), v => v.length === 1 || 'You have limit data', v => /^[1-9]*$/.test(v) || 'Value must start from 1']"
+            :rules="[v => !!v || 'Item is required', v => isUniqueSort(v), v => v.length === 1]"
             min="1"
             color="blue"
             >

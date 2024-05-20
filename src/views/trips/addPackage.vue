@@ -411,17 +411,39 @@
                         >
                         </v-file-input>
 
-                        <v-file-input
-                        v-model="images"
-                        accept="image/*"
-                        label="Package Images"
-                        :rules="[value => (value && value.length > 0) || 'Package Images are required']"
-                        color="blue"
-                        outlined
-                        show-size
-                        multiple
-                        >
-                        </v-file-input>
+                          <!-- add image form -->
+                          <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in images"  :key="index">
+                            <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
+                            > image{{ imageData.sort }} </h1>
+                            <v-row>
+                              <v-col cols="12" sm="9">
+                             <v-file-input
+                            v-model="imageData.image"
+                            accept="image/*"
+                            label="package Image"
+                            :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                            color="blue"
+                            outlined
+                            show-size
+                            >
+                            </v-file-input>
+                          </v-col>
+                          <v-col cols="12" sm="3">
+                            <v-text-field
+                            v-model="imageData.sort"
+                            label="sort image"
+                            type="number"
+                            outlined
+                            :rules="[v => !!v || 'item is required',  v => v.length === 1 ]"
+                            color="blue"
+                            >
+                            </v-text-field>
+                          </v-col>
+                        </v-row>
+                          <v-btn @click="removeImage(index)" color="red">Remove Image</v-btn>
+                        </v-card>
+                        <v-divider></v-divider>
+                        <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
 
                         <v-text-field
                         label="Slug"
@@ -1492,6 +1514,10 @@ export default {
       formData.append('image_caption', this.tour.image_caption)
       formData.append('meta_title', this.tour.packageMetaTitle)
       formData.append('meta_desc', this.tour.packageMetaDesc)
+      this.images.forEach((imageData, index) => {
+        formData.append(`images[${index}][image]`, imageData.image ? imageData.image : null)
+        formData.append(`images[${index}][sort]`, imageData.sort ? imageData.sort : index + 1)
+      })
       if (this.tour.is_top) formData.append('is_top', this.tour.is_top ? 1 : 0)
       if (this.tour.rank) formData.append('rank', this.tour.rank)
       for (let i = 0; i < this.tour.availabilities.length; i++) {
@@ -1840,6 +1866,17 @@ export default {
       this.tour.accommodation.splice(hotelIndex, 1)
       this.selectedGtaCity.splice(hotelIndex, 1)
       this.gtaHotels.splice(hotelIndex, 1)
+    },
+    addNewimage () {
+      const countImages = this.images.length
+      const newImage = {
+        image: null,
+        sort: countImages + 1
+      }
+      this.images.push(newImage)
+    },
+    removeImage (imageIndex) {
+      this.images.splice(imageIndex, 1)
     }
   },
   mounted () {

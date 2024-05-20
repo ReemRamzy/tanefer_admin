@@ -157,39 +157,16 @@
                     >
                     </v-select>
                     <v-divider></v-divider>
-                    <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in cruise.images"  :key="index">
-                      <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
-                      > image{{ imageData.sort }} </h1>
-                      <v-row>
-                        <v-col cols="12" sm="9">
-                       <v-file-input
-                      v-model="imageData.image"
-                      accept="image/*"
-                      label="Cruise Image"
-                      :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
-                      color="blue"
-                      outlined
-                      show-size
-                      >
-                      </v-file-input>
-                    </v-col>
-                    <v-col cols="12" sm="3">
-                      <v-text-field
-                      v-model="imageData.sort"
-                      label="sort image"
-                      type="number"
-                      outlined
-                      :rules="[v => !!v || 'item is required', v => v.length === 1 || ' you have limit data', v => /^[1-9]*$/.test(v) || 'value must be start from 1']"
-                      min="1"
-                      color="blue"
-                      >
-                      </v-text-field>
-                    </v-col>
-                  </v-row>
-                    <v-btn @click="removeImage(index)" color="red">Remove Image</v-btn>
-                  </v-card>
-                  <v-divider></v-divider>
-                  <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
+                    <v-file-input
+                    v-model="cruise.master_image"
+                    accept="image/*"
+                    label="Cruise Image"
+                    :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                    color="blue"
+                    outlined
+                    show-size
+                    >
+                    </v-file-input>
                     <!-- api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4" -->
                     <editor
                     v-model="cruise.description"
@@ -387,19 +364,39 @@
                           </tbody>
                           </template>
                       </v-simple-table>
-
-                      <v-file-input
-                      v-model="cruise.images"
-                      accept="image/*"
-                      label="Cruise Images"
-                      color="blue"
-                      class="mt-3"
-                      multiple
-                      outlined
-                      show-size
-                      counter
-                      >
-                      </v-file-input>
+                          <!-- add image form -->
+                      <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in cruise.images"  :key="index">
+                        <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
+                        > image{{ imageData.sort }} </h1>
+                        <v-row>
+                          <v-col cols="12" sm="9">
+                         <v-file-input
+                        v-model="imageData.image"
+                        accept="image/*"
+                        label="Cruise Image"
+                        :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                        color="blue"
+                        outlined
+                        show-size
+                        >
+                        </v-file-input>
+                      </v-col>
+                      <v-col cols="12" sm="3">
+                        <v-text-field
+                        v-model="imageData.sort"
+                        label="sort image"
+                        type="number"
+                        outlined
+                        :rules="[v => !!v || 'item is required', v => v.length === 1 ]"
+                        color="blue"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                      <v-btn @click="removeImage(index)" color="red">Remove Image</v-btn>
+                    </v-card>
+                    <v-divider></v-divider>
+                    <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
                   </v-form>
                   <v-divider class="my-3"></v-divider>
                   <v-row>
