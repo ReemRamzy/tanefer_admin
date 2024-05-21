@@ -54,6 +54,15 @@
                     >
                     </v-text-field>
                     <v-text-field
+                    v-model="cruise.sort"
+                    label="sort cruise"
+                    type="number"
+                    outlined
+                    :rules="[v => !!v || 'item is required', v => /^[0-9]*$/.test(v) || 'item must be numbers']"
+                    color="blue"
+                    >
+                    </v-text-field>
+                    <v-text-field
                     label="Cruise Line"
                     v-model="cruise.cruise_line"
                     type="text"
@@ -1125,6 +1134,13 @@ export default {
     },
     removeImage (imageIndex) {
       this.cruise.images.splice(imageIndex, 1)
+    },
+    isUniqueSort (value) {
+      if (value === null || value === undefined) {
+        return 'Sort value is required'
+      }
+      const sortValues = this.editingCruise.images.map(image => image.sort).filter(sort => sort !== null && sort !== undefined)
+      return sortValues.filter(sort => sort === value).length <= 1 || 'Sort value must be unique'
     }
   },
   beforeCreate () {

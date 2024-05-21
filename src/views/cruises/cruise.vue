@@ -622,9 +622,10 @@
           <v-card-title>Change Image</v-card-title>
           <v-card-text>
             <v-row>
+              <v-img max-width="30%" class="my-4 pa-4 text-center"   :src="cruise.master_image" max-height="150"></v-img>
               <v-col cols="12" sm="12">
                 <v-file-input
-                v-model="this.editingCruise.master_image"
+                v-model="editingCruise.master_image"
                 accept="image/*"
                 label="Cruise Master Image"
                 color="blue"
@@ -638,7 +639,7 @@
           <v-card-actions>
             <v-btn text color="warning" @click="masterImageDialog = false; updateCruiseLoading = false;">Cancel</v-btn>
             <v-spacer></v-spacer>
-            <v-btn tile color="success white--text" @click="updateCruise" :loading="updateCruiseLoading" :disabled="!hasImages">Change</v-btn>
+            <v-btn tile color="success white--text" @click="updateCruise" :loading="updateCruiseLoading">Change</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -1020,6 +1021,7 @@ export default {
       cities: [],
       seasons: [],
       image: null,
+      master_image: [],
       images: [],
       sort: '',
       imageUrl: '',
@@ -1074,9 +1076,6 @@ export default {
   computed: {
     hasImages () {
       return this.editingCruise.images.length > 0
-    },
-    hasMasterImage () {
-      return this.editingCruise.master_image.length > 0
     }
   },
   methods: {
@@ -1266,6 +1265,7 @@ export default {
       if (this.editingCruise.master_image instanceof File) {
         formData.append('master_image', this.editingCruise.master_image)
       }
+
       this.editingCruise.images.forEach((imageData, index) => {
         formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
         formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
