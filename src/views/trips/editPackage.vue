@@ -332,7 +332,7 @@
                       <v-divider></v-divider>
                       <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
                         <v-card-actions>
-                          <v-btn text color="warning" @click="masterImageDialog = false; updatePackageLoading = false;">Cancel</v-btn>
+                          <v-btn text color="success" @click="masterImageDialog = false; updatePackageLoading = false;">Continue</v-btn>
                           <!-- <v-spacer></v-spacer>
                           <v-btn  tile color="success white--text" @click="updateImagePackage" :loading="updatePackageLoading" :disabled="!hasImages" >Update Image</v-btn> -->
                         </v-card-actions>

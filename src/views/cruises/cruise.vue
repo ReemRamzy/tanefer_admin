@@ -617,7 +617,7 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog persistent max-width="1000" v-model="masterImageDialog">
+      <v-dialog  persistent max-width="1000" v-model="masterImageDialog">
         <v-card class="pa-5">
           <v-card-title>Change Image</v-card-title>
           <v-card-text>
@@ -626,7 +626,7 @@
                 <v-file-input
                 v-model="this.editingCruise.master_image"
                 accept="image/*"
-                label="Cruise Image"
+                label="Cruise Master Image"
                 color="blue"
                 outlined
                 show-size
@@ -638,7 +638,7 @@
           <v-card-actions>
             <v-btn text color="warning" @click="masterImageDialog = false; updateCruiseLoading = false;">Cancel</v-btn>
             <v-spacer></v-spacer>
-            <v-btn tile color="success white--text" @click="updateCruise" :loading="updateCruiseLoading" :disabled="!image">Change</v-btn>
+            <v-btn tile color="success white--text" @click="updateCruise" :loading="updateCruiseLoading" :disabled="!hasImages">Change</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -1074,6 +1074,9 @@ export default {
   computed: {
     hasImages () {
       return this.editingCruise.images.length > 0
+    },
+    hasMasterImage () {
+      return this.editingCruise.master_image.length > 0
     }
   },
   methods: {
