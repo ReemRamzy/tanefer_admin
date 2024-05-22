@@ -632,7 +632,7 @@
           <v-card-title>Change Image</v-card-title>
           <v-card-text>
             <v-row>
-              <v-img max-width="30%" class="my-4 pa-4 text-center"   :src="cruise.master_image" max-height="150"></v-img>
+              <v-img max-width="30%" class="my-4 pa-4 text-center" :src="master_image" max-height="150"></v-img>
               <v-col cols="12" sm="12">
                 <v-file-input
                 v-model="editingCruise.master_image"
@@ -641,6 +641,7 @@
                 color="blue"
                 outlined
                 show-size
+                @change="loadMasterImage"
                 >
                 </v-file-input>
               </v-col>
@@ -659,7 +660,7 @@
         <v-card class="pa-5">
           <v-card-title>{{mainImage ? 'Change Image' : 'Edit Images'}}</v-card-title>
           <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in this.editingCruise.images"  :key="index">
-            <v-img max-width="30%" class="text-center"  :key="index" :src="imageData.image" max-height="150"></v-img>
+            <v-img max-width="30%" class="text-center"  :key="index" :src="load_images[index].image" max-height="150"></v-img>
             <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium',padding: '1rem',fontSize: '20px' } "
             > image {{ imageData.sort ? imageData.sort : index + 1 }} </h1>
             <v-row>
@@ -672,6 +673,7 @@
             color="blue"
             outlined
             show-size
+            @change="loadImagesUrl($event, index)"
             >
             </v-file-input>
           </v-col>
@@ -697,7 +699,7 @@
         <v-divider></v-divider>
         <v-btn @click="addNewimage()" color="primary" class="mb-4 mt-2">Add Image</v-btn>
           <v-card-actions>
-            <v-btn text color="warning" @click="image = null; images = []; imageDialog = false; updateCruiseLoading = false;">Cancel</v-btn>
+            <v-btn text color="warning" @click="image = null; imageDialog = false; updateCruiseLoading = false;">Cancel</v-btn>
             <v-spacer></v-spacer>
             <v-btn v-if="mainImage" tile color="success white--text" @click="updateCruise" :loading="updateCruiseLoading" :disabled="!image">Change</v-btn>
             <v-btn v-else tile color="success white--text" @click="updateCruise" :loading="updateCruiseLoading" :disabled="!hasImages">Update</v-btn>
@@ -1031,7 +1033,8 @@ export default {
       cities: [],
       seasons: [],
       image: null,
-      master_image: [],
+      master_image: null,
+      load_images: [],
       images: [],
       sort: '',
       imageUrl: '',
@@ -1226,6 +1229,9 @@ export default {
           this.startCity = this.editingCruise.cities.find(el => el.pivot.is_start)
           this.editingCruise.cities.splice(this.editingCruise.cities.findIndex(item => item.pivot.is_start), 1)
           this.editingCruise.cities_ids = this.editingCruise.cities.map(el => el.id)
+          this.master_image = this.cruise.master_image
+          // this.images = this.cruise.images
+          this.load_images = this.cruise.images
           // this.editingCruise.images = this.cruise.images
           // this.editingCruise.sort = this.cruise.showNumImg
           // for (let index = 0; index < this.cruise.images.length; index++) {
@@ -1413,6 +1419,24 @@ export default {
       }
       const sortValues = this.editingCruise.images.map(image => image.sort).filter(sort => sort !== null && sort !== undefined)
       return sortValues.filter(sort => sort === value).length <= 1 || 'Sort value must be unique'
+    },
+    loadMasterImage (file) {
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.master_image = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
+    },
+    loadImagesUrl (file, index) {
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.load_images[index].image = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
     }
   },
   created () {
