@@ -317,6 +317,16 @@
               >
               </v-text-field>
               <v-text-field
+              label="Cruise sort"
+              v-model="editingCruise.sort"
+              type="number"
+              outlined
+              class="mt-3"
+              :rules="[v => !!v || 'item is required', v => /^[0-9]*$/.test(v) || 'item must be positive numbers']"
+              color="blue"
+              >
+              </v-text-field>
+              <v-text-field
               label="Cruise Line"
               v-model="editingCruise.cruise_line"
               type="text"
@@ -1238,6 +1248,7 @@ export default {
       const formData = new FormData()
       formData.append('_method', 'PUT')
       formData.append('name', this.editingCruise.name)
+      formData.append('sort', this.editingCruise.sort)
       formData.append('cruise_line', this.editingCruise.cruise_line)
       formData.append('ship_name', this.editingCruise.ship_name)
       formData.append('number_of_nights', this.editingCruise.number_of_nights)
@@ -1265,7 +1276,6 @@ export default {
       if (this.editingCruise.master_image instanceof File) {
         formData.append('master_image', this.editingCruise.master_image)
       }
-
       this.editingCruise.images.forEach((imageData, index) => {
         formData.append(`images[id][${index}]`, imageData.id ? imageData.id : null)
         formData.append(`images[file][${index}]`, imageData.file ? imageData.file : null)
