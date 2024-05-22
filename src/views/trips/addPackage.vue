@@ -415,6 +415,7 @@
                           <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in images"  :key="index">
                             <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
                             > image{{ imageData.sort }} </h1>
+                            <v-img max-width="30%" class="my-4 pa-4 text-center"  :key="index" :src="images[index].image" max-height="150"></v-img>
                             <v-row>
                               <v-col cols="12" sm="9">
                              <v-file-input
@@ -425,6 +426,7 @@
                             color="blue"
                             outlined
                             show-size
+                            @change="loadImagesUrl($event, index)"
                             >
                             </v-file-input>
                           </v-col>
@@ -1500,7 +1502,7 @@ export default {
         console.log(error)
       }).finally(final => {
         // console.log(final)
-      });
+      })
     },
     addTour () {
       this.addHotelLoading = true
@@ -1879,6 +1881,15 @@ export default {
     },
     removeImage (imageIndex) {
       this.images.splice(imageIndex, 1)
+    },
+    loadImagesUrl (file, index) {
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.images[index].image = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
     }
   },
   mounted () {

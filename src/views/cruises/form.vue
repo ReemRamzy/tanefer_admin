@@ -377,6 +377,7 @@
                       <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in cruise.images"  :key="index">
                         <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
                         > image{{ imageData.sort }} </h1>
+                        <v-img max-width="30%" class="my-4 pa-4 text-center"  :key="index" :src="cruise.images[index].image" max-height="150"></v-img>
                         <v-row>
                           <v-col cols="12" sm="9">
                          <v-file-input
@@ -387,6 +388,7 @@
                         color="blue"
                         outlined
                         show-size
+                        @change="loadImagesUrl($event, index)"
                         >
                         </v-file-input>
                       </v-col>
@@ -1141,6 +1143,15 @@ export default {
       }
       const sortValues = this.editingCruise.images.map(image => image.sort).filter(sort => sort !== null && sort !== undefined)
       return sortValues.filter(sort => sort === value).length <= 1 || 'Sort value must be unique'
+    },
+    loadImagesUrl (file, index) {
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.images[index].image = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
     }
   },
   beforeCreate () {

@@ -294,7 +294,7 @@
                         <v-dialog persistent max-width="1000" v-model="masterImageDialog">
                         <v-card class="pa-5">
                         <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in this.tour.images"  :key="index">
-                          <v-img max-width="30%" class="text-center"  :key="index" :src="imageData.image" max-height="150"></v-img>
+                          <v-img max-width="30%" class="text-center"  :key="index" :src="tour.load_images[index].image" max-height="150"></v-img>
                           <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium',padding: '1rem',fontSize: '20px' } "
                           > image {{ imageData.sort ? imageData.sort : index + 1 }} </h1>
                           <v-row>
@@ -307,6 +307,7 @@
                           color="blue"
                           outlined
                           show-size
+                          @change="loadImagesUrl($event, index)"
                           >
                           </v-file-input>
                         </v-col>
@@ -989,7 +990,8 @@ export default {
         excludes: [],
         discountPercent: 0,
         accommodation: [],
-        images: []
+        images: [],
+        load_images: []
       },
       editingTour: null,
       imageDialog: false,
@@ -1164,6 +1166,7 @@ export default {
           this.adventure_or_cruise = getActivities
           this.tour.accommodation = getListHotelsGta
           this.tour.images = dataResponse.packageImages
+          this.tour.load_images = dataResponse.packageImages
           this.updateAdventureCruise()
           this.calcTotalNumberOfDays()
         }
@@ -1777,6 +1780,15 @@ export default {
       }
       const sortValues = this.images.map(image => image.sort).filter(sort => sort !== null && sort !== undefined)
       return sortValues.filter(sort => sort === value).length <= 1 || 'Sort value must be unique'
+    },
+    loadImagesUrl (file, index) {
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.tour.load_images[index].image = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
     }
   },
   mounted () {
