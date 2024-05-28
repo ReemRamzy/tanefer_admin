@@ -1036,7 +1036,6 @@ export default {
       master_image: null,
       load_images: [],
       images: [],
-      sort: '',
       imageUrl: '',
       facility: '',
       policy: '',
@@ -1224,6 +1223,7 @@ export default {
           })
           this.cruise.rooms = this.cruise.rooms.filter(el => el.package_hotel_room_season.length)
           this.editingCruise = { ...this.cruise }
+          // this.editingCruise.sort = this.cruise.sort
           this.editingCruise.description = this.cruise.description
           this.editingCruise.start_city_id = this.editingCruise.cities.find(el => el.pivot.is_start).id
           this.startCity = this.editingCruise.cities.find(el => el.pivot.is_start)

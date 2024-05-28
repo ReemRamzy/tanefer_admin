@@ -422,7 +422,7 @@
                             v-model="imageData.image"
                             accept="image/*"
                             label="package Image"
-                            :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                            :rules="[v => !!v || 'Please insert a photo'|| value.size < 2000000 || 'Image size should be less than 2 MB!']"
                             color="blue"
                             outlined
                             show-size
