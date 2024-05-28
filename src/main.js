@@ -25,10 +25,10 @@ Vue.config.productionTip = false
 Vue.use(VueResource)
 Vue.use(VueCookies)
 
-Vue.http.interceptors.push(request => {
-  // modify timeout
-  request.timeout = 20000
-})
+// Vue.http.interceptors.push(request => {
+//   // modify timeout
+//   request.timeout = 20000
+// })
 
 new Vue({
   router,
