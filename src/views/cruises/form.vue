@@ -56,9 +56,10 @@
                     <v-text-field
                     v-model="cruise.sort"
                     label="sort cruise"
+                    min="1"
                     type="number"
                     outlined
-                    :rules="[v => !!v || 'item is required', v => /^[0-9]*$/.test(v) || 'item must be numbers']"
+                    :rules="[v => !!v || 'item is required']"
                     color="blue"
                     >
                     </v-text-field>
@@ -377,11 +378,11 @@
                       <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in cruise.images"  :key="index">
                         <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
                         > image{{ imageData.sort }} </h1>
-                        <v-img max-width="30%" class="my-4 pa-4 text-center"  :key="index" :src="cruise.images[index].image" max-height="150"></v-img>
+                        <v-img max-width="30%" class="my-4 pa-4 text-center"  :key="index" :src="imageData.image" max-height="150"></v-img>
                         <v-row>
                           <v-col cols="12" sm="9">
                          <v-file-input
-                        v-model="imageData.image"
+                        v-model="imageData.file"
                         accept="image/*"
                         label="Cruise Image"
                         :rules="[v => !!v || 'Please insert a photo'|| value.size < 2000000 || 'Image size should be less than 2 MB!']"
@@ -398,7 +399,7 @@
                         label="sort image"
                         type="number"
                         outlined
-                        :rules="[v => !!v || 'item is required', v => v.length === 1 ]"
+                        :rules="[v => !!v || 'item is required' ]"
                         color="blue"
                         >
                         </v-text-field>
@@ -866,6 +867,7 @@ export default {
         city_id: null,
         number_of_nights: 1,
         images: [],
+        load_image: null,
         sort: [],
         rooms: [],
         seo_title: '',
@@ -1015,6 +1017,7 @@ export default {
       const formData = new FormData()
       formData.append('_method', 'POST')
       formData.append('name', this.cruise.name)
+      formData.append('sort', this.cruise.sort)
       formData.append('cruise_line', this.cruise.cruise_line)
       formData.append('number_of_nights', this.cruise.number_of_nights)
       for (let i = 0; i < this.cruise.policies.length; i++) {
@@ -1070,7 +1073,7 @@ export default {
       //   formData.append('sort[]', this.cruise.sort)
       // }
       this.cruise.images.forEach((imageData, index) => {
-        formData.append(`images[${index}][image]`, imageData.image ? imageData.image : null)
+        formData.append(`images[${index}][image]`, imageData.file ? imageData.file : null)
         formData.append(`images[${index}][sort]`, imageData.sort ? imageData.sort : index + 1)
       })
       formData.append('seo_title', this.cruise.seo_title)
@@ -1127,10 +1130,10 @@ export default {
       this.room.childrentiers.splice(index, 1)
     },
     addNewimage () {
-      const countImages = this.cruise.images.length
       const newImage = {
         image: null,
-        sort: countImages + 1
+        sort: null,
+        file: null
       }
       this.cruise.images.push(newImage)
     },
@@ -1148,7 +1151,7 @@ export default {
       if (file) {
         const reader = new FileReader()
         reader.onload = (e) => {
-          this.images[index].image = e.target.result
+          this.cruise.images[index].image = e.target.result
         }
         reader.readAsDataURL(file)
       }

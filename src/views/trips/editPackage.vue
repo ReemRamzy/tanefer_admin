@@ -279,7 +279,7 @@
                               </tbody>
                           </template>
                         </v-simple-table>
-
+                        <v-img max-width="30%" class="my-4 pa-4 text-center" :src="tour.master_image" max-height="150"></v-img>
                         <v-file-input
                         v-model="image"
                         accept="image/*"
@@ -287,7 +287,7 @@
                         color="blue"
                         outlined
                         show-size
-                        @change="clearImageOnRemove"
+                        @change="loadMasterImage"
                         >
                         </v-file-input>
                         <v-btn @click="masterImageDialog = true; " color="primary" class="mb-4 mt-2">edit image</v-btn>
@@ -991,7 +991,8 @@ export default {
         discountPercent: 0,
         accommodation: [],
         images: [],
-        load_images: []
+        load_images: [],
+        master_image: null
       },
       editingTour: null,
       imageDialog: false,
@@ -1167,6 +1168,7 @@ export default {
           this.tour.accommodation = getListHotelsGta
           this.tour.images = dataResponse.packageImages
           this.tour.load_images = dataResponse.packageImages
+          this.tour.master_image = dataResponse.packageImage
           this.updateAdventureCruise()
           this.calcTotalNumberOfDays()
         }
@@ -1780,6 +1782,15 @@ export default {
       }
       const sortValues = this.images.map(image => image.sort).filter(sort => sort !== null && sort !== undefined)
       return sortValues.filter(sort => sort === value).length <= 1 || 'Sort value must be unique'
+    },
+    loadMasterImage (file) {
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.tour.master_image = e.target.result
+        }
+        reader.readAsDataURL(file)
+      }
     },
     loadImagesUrl (file, index) {
       if (file) {

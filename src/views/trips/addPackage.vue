@@ -415,11 +415,11 @@
                           <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in images"  :key="index">
                             <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium', padding: '1rem', fontSize: '20px' }"
                             > image{{ imageData.sort }} </h1>
-                            <v-img max-width="30%" class="my-4 pa-4 text-center"  :key="index" :src="images[index].image" max-height="150"></v-img>
+                            <v-img max-width="30%" class="my-4 pa-4 text-center"  :key="index" :src="imageData.image" max-height="150"></v-img>
                             <v-row>
                               <v-col cols="12" sm="9">
                              <v-file-input
-                            v-model="imageData.image"
+                            v-model="imageData.file"
                             accept="image/*"
                             label="package Image"
                             :rules="[v => !!v || 'Please insert a photo'|| value.size < 2000000 || 'Image size should be less than 2 MB!']"
@@ -435,6 +435,7 @@
                             v-model="imageData.sort"
                             label="sort image"
                             type="number"
+                            min="1"
                             outlined
                             :rules="[v => !!v || 'item is required',  v => v.length > 0 ]"
                             color="blue"
@@ -1161,6 +1162,7 @@ export default {
       },
       image: null,
       images: [],
+      load_image: null,
       cityID: '',
       cityName: '',
       cityDayNumber: '',
@@ -1519,7 +1521,7 @@ export default {
       formData.append('meta_title', this.tour.packageMetaTitle)
       formData.append('meta_desc', this.tour.packageMetaDesc)
       this.images.forEach((imageData, index) => {
-        formData.append(`images[${index}][file]`, imageData.image ? imageData.image : null)
+        formData.append(`images[${index}][file]`, imageData.file ? imageData.file : null)
         formData.append(`images[${index}][sort]`, imageData.sort ? imageData.sort : index + 1)
       })
       if (this.tour.is_top) formData.append('is_top', this.tour.is_top ? 1 : 0)
@@ -1578,6 +1580,7 @@ export default {
       }
 
       if (this.image) formData.append('package_image', this.image, this.image.name)
+      if (this.load_image) formData.append('load_image', this.images)
 
       // for (let i = 0; i < this.images.length; i++) {
       //   formData.append('images[' + i + ']', this.images[i], this.images[i].name)
@@ -1872,10 +1875,10 @@ export default {
       this.gtaHotels.splice(hotelIndex, 1)
     },
     addNewimage () {
-      const countImages = this.images.length
       const newImage = {
         image: null,
-        sort: null
+        sort: null,
+        file: null
       }
       this.images.push(newImage)
     },

@@ -319,10 +319,11 @@
               <v-text-field
               label="Cruise sort"
               v-model="editingCruise.sort"
+              min="1"
               type="number"
               outlined
               class="mt-3"
-              :rules="[v => !!v || 'item is required', v => /^[0-9]*$/.test(v) || 'item must be positive numbers']"
+              :rules="[v => !!v || 'item is required']"
               color="blue"
               >
               </v-text-field>
@@ -681,10 +682,10 @@
             <v-text-field
             v-model="imageData.sort"
             label="sort image"
+            min="1"
             type="number"
             outlined
             :rules="[v => !!v || 'Item is required', v => isUniqueSort(v), v => v.length === 1]"
-            min="1"
             color="blue"
             >
             </v-text-field>
