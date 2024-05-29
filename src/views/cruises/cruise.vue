@@ -602,7 +602,7 @@
               <!-- api-key="k73spamkrjccv5w3e5c9f2oa0h5hm3ncwotken8jtkfq2il4" -->
               <editor
               v-model="editingCruise.description"
-              api-key="414unjfipp8yuhppj7tjmvs14aaneoj3dv7el0p4b2h3lsax"
+              api-key="x21puj7j5tdxkuct1ma1pa63pwru6yf0skeh4huvvgxv4f5x"
               :init="{
                 placeholder: 'Cruise Description',
                 height: 200,
