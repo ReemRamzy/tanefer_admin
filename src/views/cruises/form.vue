@@ -171,7 +171,7 @@
                     v-model="cruise.master_image"
                     accept="image/*"
                     label="Cruise Image"
-                    :rules="[v => !!v || 'Please insert a photo', value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                    :rules="[v => !!v || 'Please insert a photo']"
                     color="blue"
                     outlined
                     show-size
@@ -385,7 +385,7 @@
                         v-model="imageData.file"
                         accept="image/*"
                         label="Cruise Image"
-                        :rules="[v => !!v || 'Please insert a photo'|| value.size < 2000000 || 'Image size should be less than 2 MB!']"
+                        :rules="[v => !!v || 'Please insert a photo']"
                         color="blue"
                         outlined
                         show-size

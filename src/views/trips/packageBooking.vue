@@ -72,9 +72,9 @@
                                 <th class="text-left">
                                     Children
                                 </th>
-                                <th class="text-left">
+                                <!-- <th class="text-left">
                                     Status
-                                </th>
+                                </th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -85,7 +85,7 @@
                                 <td class="text-left">
                                     {{ bookingDetails.children }}
                                 </td>
-                                <td class="text-left">
+                                <!-- <td class="text-left">
                                     <span v-if="bookingDetails.status === 'pending payment' && checkHasCruise === true">
                                         <v-btn
                                             tile
@@ -100,7 +100,7 @@
                                     <span v-else>
                                         {{bookingDetails.status}}
                                     </span>
-                                </td>
+                                </td> -->
                             </tr>
                         </tbody>
                     </template>
