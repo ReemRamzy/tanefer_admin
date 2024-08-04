@@ -36,7 +36,8 @@ export const hotelsBookings = `${url}/admin/hotels-bookings`
 export const cancelReservation = `${url}/packages/get-cancel-booking`
 
 // activities
-export const allActivities = (rowPerPage, page) => `${url}/admin/activities?row_per_page=${rowPerPage}&page=${page}`
+// update row_per_page to solve the search issue temp-sloution
+export const allActivities = (rowPerPage, page) => `${url}/admin/activities?row_per_page=100&page=${page}`
 export const removeActivity = (id) => `${url}/admin/activities/${id}`
 export const addActivity = `${url}/admin/activities`
 export const updateActivity = (id) => `${url}/admin/activities/${id}`
