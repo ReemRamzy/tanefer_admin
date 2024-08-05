@@ -15,6 +15,8 @@
                 <v-form v-model="valid" ref="form">
                     <v-text-field label="Activity Title" v-model="activity.activityTitle" type="text" outlined class="mt-3" :rules="[v => !!v || 'item is required']" color="blue">
                     </v-text-field>
+                    <v-text-field label="Activity Sort" v-model="activity.activitySort" type="text" outlined class="mt-3" :rules="[v => !!v || 'item is required']" color="blue">
+                    </v-text-field>
                     <v-checkbox v-model="activity.published" label="Published Adventure"></v-checkbox>
                     <h5 class="text-h5 black--text font-weight-bold">Intro</h5>
                     <wysiwyg v-model="activity.activityIntro" />
@@ -414,6 +416,7 @@ export default {
       text: '',
       activity: {
         activityTitle: '',
+        activitySort: '',
         activityIntro: '',
         activityItinerary: '',
         activityOverview: '',
@@ -485,6 +488,7 @@ export default {
       } else {
         this.activity = {
           activityTitle: '',
+          activitySort: '',
           activityIntro: '',
           activityItinerary: '',
           activityOverview: '',
@@ -656,6 +660,7 @@ export default {
               this.loading = true
               const formData = new FormData()
               formData.append('activity_title', this.activity.activityTitle)
+              formData.append('activity_sort', this.activity.activitySort)
               formData.append('activity_intro', this.activity.activityIntro)
               formData.append('activity_itinerary', this.activity.activityItinerary)
               formData.append('activity_overview', this.activity.activityOverview)
@@ -719,6 +724,7 @@ export default {
                   this.$emit('added')
                   this.activity = {
                     activityTitle: '',
+                    activitySort: '',
                     activityIntro: '',
                     activityItinerary: '',
                     activityOverview: '',
@@ -892,6 +898,7 @@ export default {
     } else {
       this.activity = {
         activityTitle: '',
+        activitySort: '',
         activityIntro: '',
         activityItinerary: '',
         activityOverview: '',

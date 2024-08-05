@@ -170,10 +170,10 @@
               <template v-if="type === 'activities'" v-slot:item.activityDuration_digits="{ item }">
                 <span>{{item.activityDuration_digits}} {{item.activityDuration_type}}</span>
               </template>
-              <template v-if="type === 'activities'" v-slot:item.editAct="{ item }">
+              <template v-if="type === 'activities'" v-slot:item.editActive="{ item }">
                 <v-btn text color="blue" @click="$emit('editActivity', item)">Edit</v-btn>
               </template>
-              <template v-if="type === 'activities'" v-slot:item.removeAct="{ item }">
+              <template v-if="type === 'activities'" v-slot:item.removeActive="{ item }">
                 <v-btn text color="error" @click="$emit('removeActivity', item.activityID)">Remove</v-btn>
               </template>
 

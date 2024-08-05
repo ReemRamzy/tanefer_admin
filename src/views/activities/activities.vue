@@ -137,8 +137,8 @@ export default {
         { text: 'City', value: 'activityCity.CityName' },
         { text: 'Duration', value: 'activityDuration_digits' },
         { text: 'Published', value: 'published' },
-        { text: 'Edit', value: 'editAct' },
-        { text: 'Remove', value: 'removeAct' }
+        { text: 'Edit', value: 'editActive' },
+        { text: 'Remove', value: 'removeActive' }
       ],
       editingActivity: null,
       showActivityDialog: false,
