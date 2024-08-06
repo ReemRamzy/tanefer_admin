@@ -150,6 +150,7 @@
 <script>
 import { tripCities, tripCity, getAirports, headers } from '../../links'
 import grid from '../../components/tables.vue'
+import Swal from 'sweetalert2'
 
 export default {
   components: {
@@ -299,21 +300,38 @@ export default {
       }
     },
     removeCity (id) {
-      this.$http.delete(tripCity(id), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
-        if (response.status === 200) {
-          this.snackbar = true
-          this.color = 'success'
-          this.text = 'City was deleted'
-          this.getCities()
-        } else {
-          this.snackbar = true
-          this.color = 'error'
-          this.text = response.body.message
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.$http.delete(tripCity(id), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
+            if (response.status === 200) {
+              this.snackbar = true
+              this.color = 'success'
+              this.text = 'City was deleted'
+              this.getCities()
+              Swal.fire(
+                'Deleted!',
+                'Your item has been deleted.',
+                'success'
+              )
+            } else {
+              this.snackbar = true
+              this.color = 'error'
+              this.text = response.body.message
+            }
+          }, err => {
+            this.snackbar = true
+            this.color = 'error'
+            this.text = err.body.message
+          })
         }
-      }, err => {
-        this.snackbar = true
-        this.color = 'error'
-        this.text = err.body.message
       })
     },
     getCities () {
