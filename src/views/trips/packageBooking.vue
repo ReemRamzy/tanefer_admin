@@ -809,10 +809,10 @@ export default {
       }
     },
     sendEmail () {
-      const formData = new FormData()
-      formData.append('book_id', this.bookingDetails.id)
-      formData.append('price', this.bookingDetails.total_price)
-      formData.append('status', 'accept')
+        const formData = new FormData()
+        formData.append('book_id', this.bookingDetails.id)
+        formData.append('price', this.bookingDetails.total_price)
+        formData.append('status', 'accept')
 
         this.$http.post(sendEmailCruise, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
           this.btnLoad = false
@@ -832,7 +832,7 @@ export default {
           this.color = 'error'
           this.text = err.body.message
           this.btnLoad = false
-      })
+        })
     }
   }
 }
