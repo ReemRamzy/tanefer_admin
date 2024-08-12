@@ -198,7 +198,7 @@
               <template v-if="type === 'activitiesBookings'" v-slot:item.id="{ item }">
                 <v-btn text small color="blue lighten--1" @click="$router.push({name: 'activityBooking', params: {id: item.id}})">{{ item.id }}</v-btn>
               </template>
-              
+
               <!-- cruises bookings -->
               <template v-else-if="type === 'cruisesBookings'" v-slot:item.id="{ item }">
                 <v-btn text small color="blue lighten--1" @click="$router.push({name: 'cruiseBooking', params: {id: item.id}})">{{ item.id }}</v-btn>
