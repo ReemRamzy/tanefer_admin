@@ -19,13 +19,70 @@
                     </v-text-field>
                     <v-checkbox v-model="activity.published" label="Published Adventure"></v-checkbox>
                     <h5 class="text-h5 black--text font-weight-bold">Intro</h5>
-                    <wysiwyg v-model="activity.activityIntro" />
+                    <!-- <wysiwyg v-model="activity.activityIntro" /> -->
+                    <editor
+                    v-model="activity.activityIntro"
+                    api-key="x21puj7j5tdxkuct1ma1pa63pwru6yf0skeh4huvvgxv4f5x"
+                    :init="{
+                      placeholder: 'Intro',
+                      height: 300,
+                      menubar: false,
+                      plugins: [
+                        'advlist autolink lists link anchor',
+                        'insertdatetime table paste',
+                        'fontsize color'
+                      ],
+                      toolbar:
+                        'undo redo | formatselect | fontselect fontsizeselect | \
+                        bold italic | forecolor backcolor | \
+                        alignleft aligncenter alignright alignjustify | \
+                        bullist numlist outdent indent | removeformat'
+                    }"
+                    />
                     <br>
                     <h5 class="text-h5 black--text font-weight-bold">Itinerary</h5>
-                    <wysiwyg v-model="activity.activityItinerary" />
+                    <!-- <wysiwyg v-model="activity.activityItinerary" /> -->
+                    <editor
+                    v-model="activity.activityItinerary"
+                    api-key="x21puj7j5tdxkuct1ma1pa63pwru6yf0skeh4huvvgxv4f5x"
+                    :init="{
+                      placeholder: 'Itinerary',
+                      height: 300,
+                      menubar: false,
+                      plugins: [
+                        'advlist autolink lists link anchor',
+                        'insertdatetime table paste',
+                        'fontsize color'
+                      ],
+                      toolbar:
+                        'undo redo | formatselect | fontselect fontsizeselect | \
+                        bold italic | forecolor backcolor | \
+                        alignleft aligncenter alignright alignjustify | \
+                        bullist numlist outdent indent | removeformat'
+                    }"
+                    />
                     <br>
                     <h5 class="text-h5 black--text font-weight-bold">Notes</h5>
-                    <wysiwyg v-model="activity.activityOverview" />
+                    <!-- <wysiwyg v-model="activity.activityOverview" /> -->
+                    <editor
+                    v-model="activity.activityOverview"
+                    api-key="x21puj7j5tdxkuct1ma1pa63pwru6yf0skeh4huvvgxv4f5x"
+                    :init="{
+                      placeholder: 'Notes',
+                      height: 300,
+                      menubar: false,
+                      plugins: [
+                        'advlist autolink lists link anchor',
+                        'insertdatetime table paste',
+                        'fontsize color'
+                      ],
+                      toolbar:
+                        'undo redo | formatselect | fontselect fontsizeselect | \
+                        bold italic | forecolor backcolor | \
+                        alignleft aligncenter alignright alignjustify | \
+                        bullist numlist outdent indent | removeformat'
+                    }"
+                    />
                     <v-select class="mt-5" v-model="activity.activityType" :items="['sightseeing', 'camping']" color="blue" outlined label="Activity type" :rules="[v => !!v || 'type is required']" @input="createDaysArray">
                     </v-select>
                     <v-select v-model="activity.activityCity.CityID" :items="cities" item-value="CityID" item-text="CityName" color="blue" outlined label="Activity City" :rules="[v => !!v || 'city is required']">
@@ -395,9 +452,13 @@
 
 <script>
 import { formLists, headers, addActivity, updateActivity } from '../links'
+import Editor from '@tinymce/tinymce-vue'
 
 export default {
   props: ['type', 'data'],
+  components: {
+    editor: Editor
+  },
   data () {
     return {
       minMaxRules: [
@@ -769,7 +830,7 @@ export default {
                     const errors = Object.values(errorData.errors).flat()
                     this.showSnackbar(errors.join('\n'), 'error')
                   } else {
-                    this.showSnackbar('Invalid data', 'error')
+                    this.showSnackbar(errorData.errors, 'error')
                   }
                 }
               }, err => {
