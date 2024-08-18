@@ -40,6 +40,9 @@ import editPackage from '../views/trips/editPackage.vue'
 // trips
 import settingSeo from '../views/settings/seo.vue'
 
+// users
+import registeredUsers from '../views/registeredUsers.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -59,7 +62,11 @@ const routes = [
     name: 'resetPassword',
     component: resetPassword
   },
-
+  {
+    path: '/registeredUsers',
+    name: 'registeredUsers',
+    component: registeredUsers
+  },
   // hotels
   {
     path: '/hotels',

@@ -100,3 +100,7 @@ export function isTokenExpired (token) {
   // Check if the token is expired
   return currentTime > expirationTime
 }
+
+// Registered users
+
+export const registeredUsers = `${url}/admin/clients-list`

@@ -359,6 +359,18 @@
                         <v-list-item-title>SEO</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                <v-list-item
+                link
+                to="/registeredUsers"
+                >
+                    <v-list-item-icon>
+                        <v-icon>mdi-users</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content>
+                        <v-list-item-title>Registered Users</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
             </v-list>
         </v-navigation-drawer>
    </div>
