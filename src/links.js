@@ -104,3 +104,4 @@ export function isTokenExpired (token) {
 // Registered users
 
 export const registeredUsers = `${url}/admin/clients-list`
+export const deleteUser = (id) => `${url}/admin/delete-client/${id}`
