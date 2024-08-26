@@ -444,8 +444,9 @@
             <v-card-actions>
                 <v-btn text color="warning" @click="$emit('close')">Cancel</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn tile :loading="loading" :disabled="isDisabled()" color="success" @click="takeAction">{{type === 'add' ? 'add' : 'update'}}</v-btn>
-            </v-card-actions>
+                <!-- <v-btn tile :loading="loading" :disabled="isDisabled()" color="success" @click="takeAction">{{type === 'add' ? 'add' : 'update'}}</v-btn> -->
+                <v-btn tile :loading="loading" color="success" @click="takeAction">{{type === 'add' ? 'add' : 'update'}}</v-btn>
+              </v-card-actions>
         </v-card>
     </div>
 </template>
@@ -683,185 +684,272 @@ export default {
         this.text = 'Please provide side activity name and time before submitting'
       }
     },
+    // takeAction () {
+    //   this.$refs.form.validate()
+    //   if (this.valid) {
+    //     var errorCount = 0
+    //     if (this.activity.availabilities.length > 0) {
+    //       var lastFromDate = null
+    //       var lastToDate = null
+    //       for (let i = 0; i < this.activity.availabilities.length; i++) {
+    //         var lastAvailability = this.activity.availabilities[i]
+    //         if ((lastFromDate != null && lastToDate != null && lastAvailability.from_date > lastToDate) || (lastFromDate == null && lastToDate == null)) {
+    //           if (lastAvailability.to_date > lastAvailability.from_date) {
+    //             lastFromDate = lastAvailability.from_date
+    //             lastToDate = lastAvailability.to_date
+    //           } else {
+    //             this.snackbar = true
+    //             this.color = 'error'
+    //             this.text = '(To Date) must be greater than (From Date)'
+    //             errorCount++
+    //           }
+    //         } else {
+    //           this.snackbar = true
+    //           this.color = 'error'
+    //           this.text = '(From Date) must be greater than the Previous (To Date)'
+    //           errorCount++
+    //         }
+    //       }
+    //     } else {
+    //       this.snackbar = true
+    //       this.color = 'error'
+    //       this.text = 'Please make sure to add Availabilities and PricingTiers'
+    //       errorCount++
+    //     }
+    //     if (errorCount === 0) {
+    //       if ((this.activity.activityType === 'camping' && this.activity.sideActivity.length > 0) || this.activity.activityType !== 'camping') {
+    //         if (this.activity.activityIncludes.length > 0 && this.activity.activityExcludes.length > 0) {
+    //           this.loading = true
+    //           const formData = new FormData()
+    //           formData.append('activity_title', this.activity.activityTitle)
+    //           formData.append('activity_sort', this.activity.activitySort)
+    //           formData.append('activity_intro', this.activity.activityIntro)
+    //           formData.append('activity_itinerary', this.activity.activityItinerary)
+    //           formData.append('activity_overview', this.activity.activityOverview)
+    //           formData.append('activity_start_time', this.activity.activityStartTime)
+    //           formData.append('activity_end_time', this.activity.activityEndTime)
+    //           formData.append('activity_city_id', this.activity.activityCity.CityID)
+    //           formData.append('activity_duration_digits', this.activity.activityDuration_digits)
+    //           formData.append('activity_duration_type', this.activity.activityDuration_type)
+    //           formData.append('activity_type', this.activity.activityType)
+    //           formData.append('is_published', this.activity.published ? 1 : 0)
+
+    //           for (let i = 0; i < this.activity.activityIncludes.length; i++) {
+    //             formData.append('activity_includes[]', this.activity.activityIncludes[i])
+    //           }
+
+    //           for (let i = 0; i < this.activity.activityExcludes.length; i++) {
+    //             formData.append('activity_excludes[]', this.activity.activityExcludes[i])
+    //           }
+
+    //           if (this.activity.sideActivity.length > 0) {
+    //             for (let i = 0; i < this.activity.sideActivity.length; i++) {
+    //               formData.append('side_activity[' + i + '][time]', this.type === 'edit' ? this.activity.sideActivity[i].activityTime : this.activity.sideActivity[i].sideActivityTime)
+    //               formData.append('side_activity[' + i + '][day_number]', this.type === 'edit' ? this.activity.sideActivity[i].activityDayNumber : this.activity.sideActivity[i].sideActivityDayNumber)
+    //               formData.append('side_activity[' + i + '][name]', this.type === 'edit' ? this.activity.sideActivity[i].activityName : this.activity.sideActivity[i].sideActivityName)
+    //             }
+    //           }
+    //           for (let i = 0; i < this.activity.start_days.length; i++) {
+    //             formData.append('start_days[' + i + ']', this.activity.start_days[i])
+    //           }
+
+    //           for (let i = 0; i < this.image.length; i++) {
+    //             formData.append('activity_image[]', this.image[i], this.image[i].name)
+    //           }
+
+    //           this.activity.availabilities.forEach((availability, index) => {
+    //             formData.append(`availabilities[${index}][from_date]`, availability.from_date)
+    //             formData.append(`availabilities[${index}][to_date]`, availability.to_date)
+
+    //             availability.pricingtiers.forEach((pricingTier, tierIndex) => {
+    //               formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][name]`, pricingTier.name)
+    //               formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][min]`, pricingTier.min)
+    //               formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][max]`, pricingTier.max)
+    //               formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][adult_price]`, pricingTier.adult_price)
+    //               formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][max_child]`, pricingTier.max_child)
+    //               formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][child_percentage]`, pricingTier.child_percentage)
+    //             })
+    //           })
+
+    //           if (this.type === 'edit') formData.append('_method', 'PUT')
+    //           let endpoint = null
+    //           if (this.type === 'add') endpoint = addActivity
+    //           else endpoint = updateActivity(this.data.activityID)
+
+    //           this.$http.post(endpoint, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
+    //             this.loading = false
+    //             if (response.body.status === 200) {
+    //               this.snackbar = true
+    //               this.color = 'success'
+    //               this.text = this.type === 'add' ? 'Added' : 'Updated' + 'successfully'
+    //               this.$refs.form.resetValidation()
+    //               this.$emit('added')
+    //               this.activity = {
+    //                 activityTitle: '',
+    //                 activitySort: '',
+    //                 activityIntro: '',
+    //                 activityItinerary: '',
+    //                 activityOverview: '',
+    //                 activityStartTime: '',
+    //                 activityEndTime: '',
+    //                 activityIncludes: [],
+    //                 activityExcludes: [],
+    //                 activityCity: {
+    //                   CityID: ''
+    //                 },
+    //                 activityImage: null,
+    //                 activityDuration_digits: null,
+    //                 activityDuration_type: 'hour',
+    //                 activityType: 'sightseeing',
+    //                 sideActivity: [],
+    //                 published: true,
+    //                 start_days: [],
+    //                 seasons: [],
+    //                 availabilities: [
+    //                   {
+    //                     from_date: '',
+    //                     to_date: '',
+    //                     pricingtiers: [
+    //                       {
+    //                         name: '',
+    //                         min: '',
+    //                         max: '',
+    //                         adult_price: '',
+    //                         max_child: '',
+    //                         child_percentage: ''
+    //                       }
+    //                     ]
+    //                   }
+    //                 ]
+    //               }
+    //             } else {
+    //               const errorData = response.body
+    //               if (errorData.errors && Array.isArray(errorData.errors)) {
+    //                 const errors = errorData.errors
+    //                 this.showSnackbar(errors.join('\n'), 'error')
+    //               } else if (errorData.errors && typeof errorData.errors === 'object') {
+    //                 const errors = Object.values(errorData.errors).flat()
+    //                 this.showSnackbar(errors.join('\n'), 'error')
+    //               } else {
+    //                 this.showSnackbar(errorData.errors, 'error')
+    //               }
+    //             }
+    //           }, err => {
+    //             this.loading = false
+    //             const errorData = err.body
+    //             if (errorData.errors && Array.isArray(errorData.errors)) {
+    //               const errors = errorData.errors
+    //               this.showSnackbar(errors.join('\n'), 'error')
+    //             } else if (errorData.errors && typeof errorData.errors === 'object') {
+    //               const errors = Object.values(errorData.errors).flat()
+    //               this.showSnackbar(errors.join('\n'), 'error')
+    //             } else {
+    //               this.showSnackbar('Invalid data', 'error')
+    //             }
+    //           })
+    //         } else {
+    //           this.snackbar = true
+    //           this.color = 'error'
+    //           this.text = 'Please make sure to add inclusions and exclusions'
+    //         }
+    //       } else {
+    //         this.snackbar = true
+    //         this.color = 'error'
+    //         this.text = 'Please provide at least one side activity'
+    //       }
+    //     }
+    //   } else {
+    //     this.snackbar = true
+    //     this.color = 'error'
+    //     this.text = 'Please fill all required fields'
+    //   }
+    // },
     takeAction () {
-      this.$refs.form.validate()
-      if (this.valid) {
-        var errorCount = 0
-        if (this.activity.availabilities.length > 0) {
-          var lastFromDate = null
-          var lastToDate = null
-          for (let i = 0; i < this.activity.availabilities.length; i++) {
-            var lastAvailability = this.activity.availabilities[i]
-            if ((lastFromDate != null && lastToDate != null && lastAvailability.from_date > lastToDate) || (lastFromDate == null && lastToDate == null)) {
-              if (lastAvailability.to_date > lastAvailability.from_date) {
-                lastFromDate = lastAvailability.from_date
-                lastToDate = lastAvailability.to_date
-              } else {
-                this.snackbar = true
-                this.color = 'error'
-                this.text = '(To Date) must be greater than (From Date)'
-                errorCount++
-              }
-            } else {
-              this.snackbar = true
-              this.color = 'error'
-              this.text = '(From Date) must be greater than the Previous (To Date)'
-              errorCount++
-            }
-          }
-        } else {
-          this.snackbar = true
-          this.color = 'error'
-          this.text = 'Please make sure to add Availabilities and PricingTiers'
-          errorCount++
-        }
-        if (errorCount === 0) {
-          if ((this.activity.activityType === 'camping' && this.activity.sideActivity.length > 0) || this.activity.activityType !== 'camping') {
-            if (this.activity.activityIncludes.length > 0 && this.activity.activityExcludes.length > 0) {
-              this.loading = true
-              const formData = new FormData()
-              formData.append('activity_title', this.activity.activityTitle)
-              formData.append('activity_sort', this.activity.activitySort)
-              formData.append('activity_intro', this.activity.activityIntro)
-              formData.append('activity_itinerary', this.activity.activityItinerary)
-              formData.append('activity_overview', this.activity.activityOverview)
-              formData.append('activity_start_time', this.activity.activityStartTime)
-              formData.append('activity_end_time', this.activity.activityEndTime)
-              formData.append('activity_city_id', this.activity.activityCity.CityID)
-              formData.append('activity_duration_digits', this.activity.activityDuration_digits)
-              formData.append('activity_duration_type', this.activity.activityDuration_type)
-              formData.append('activity_type', this.activity.activityType)
-              formData.append('is_published', this.activity.published ? 1 : 0)
+      this.loading = true
+      const formData = new FormData()
 
-              for (let i = 0; i < this.activity.activityIncludes.length; i++) {
-                formData.append('activity_includes[]', this.activity.activityIncludes[i])
-              }
+      formData.append('activity_title', this.activity.activityTitle)
+      formData.append('activity_sort', this.activity.activitySort)
+      formData.append('activity_intro', this.activity.activityIntro)
+      formData.append('activity_itinerary', this.activity.activityItinerary)
+      formData.append('activity_overview', this.activity.activityOverview)
+      formData.append('activity_start_time', this.activity.activityStartTime)
+      formData.append('activity_end_time', this.activity.activityEndTime)
+      formData.append('activity_city_id', this.activity.activityCity.CityID)
+      formData.append('activity_duration_digits', this.activity.activityDuration_digits)
+      formData.append('activity_duration_type', this.activity.activityDuration_type)
+      formData.append('activity_type', this.activity.activityType)
+      formData.append('is_published', this.activity.published ? 1 : 0)
 
-              for (let i = 0; i < this.activity.activityExcludes.length; i++) {
-                formData.append('activity_excludes[]', this.activity.activityExcludes[i])
-              }
-
-              if (this.activity.sideActivity.length > 0) {
-                for (let i = 0; i < this.activity.sideActivity.length; i++) {
-                  formData.append('side_activity[' + i + '][time]', this.type === 'edit' ? this.activity.sideActivity[i].activityTime : this.activity.sideActivity[i].sideActivityTime)
-                  formData.append('side_activity[' + i + '][day_number]', this.type === 'edit' ? this.activity.sideActivity[i].activityDayNumber : this.activity.sideActivity[i].sideActivityDayNumber)
-                  formData.append('side_activity[' + i + '][name]', this.type === 'edit' ? this.activity.sideActivity[i].activityName : this.activity.sideActivity[i].sideActivityName)
-                }
-              }
-              for (let i = 0; i < this.activity.start_days.length; i++) {
-                formData.append('start_days[' + i + ']', this.activity.start_days[i])
-              }
-
-              for (let i = 0; i < this.image.length; i++) {
-                formData.append('activity_image[]', this.image[i], this.image[i].name)
-              }
-
-              this.activity.availabilities.forEach((availability, index) => {
-                formData.append(`availabilities[${index}][from_date]`, availability.from_date)
-                formData.append(`availabilities[${index}][to_date]`, availability.to_date)
-
-                availability.pricingtiers.forEach((pricingTier, tierIndex) => {
-                  formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][name]`, pricingTier.name)
-                  formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][min]`, pricingTier.min)
-                  formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][max]`, pricingTier.max)
-                  formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][adult_price]`, pricingTier.adult_price)
-                  formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][max_child]`, pricingTier.max_child)
-                  formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][child_percentage]`, pricingTier.child_percentage)
-                })
-              })
-
-              if (this.type === 'edit') formData.append('_method', 'PUT')
-              let endpoint = null
-              if (this.type === 'add') endpoint = addActivity
-              else endpoint = updateActivity(this.data.activityID)
-
-              this.$http.post(endpoint, formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
-                this.loading = false
-                if (response.body.status === 200) {
-                  this.snackbar = true
-                  this.color = 'success'
-                  this.text = this.type === 'add' ? 'Added' : 'Updated' + 'successfully'
-                  this.$refs.form.resetValidation()
-                  this.$emit('added')
-                  this.activity = {
-                    activityTitle: '',
-                    activitySort: '',
-                    activityIntro: '',
-                    activityItinerary: '',
-                    activityOverview: '',
-                    activityStartTime: '',
-                    activityEndTime: '',
-                    activityIncludes: [],
-                    activityExcludes: [],
-                    activityCity: {
-                      CityID: ''
-                    },
-                    activityImage: null,
-                    activityDuration_digits: null,
-                    activityDuration_type: 'hour',
-                    activityType: 'sightseeing',
-                    sideActivity: [],
-                    published: true,
-                    start_days: [],
-                    seasons: [],
-                    availabilities: [
-                      {
-                        from_date: '',
-                        to_date: '',
-                        pricingtiers: [
-                          {
-                            name: '',
-                            min: '',
-                            max: '',
-                            adult_price: '',
-                            max_child: '',
-                            child_percentage: ''
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                } else {
-                  const errorData = response.body
-                  if (errorData.errors && Array.isArray(errorData.errors)) {
-                    const errors = errorData.errors
-                    this.showSnackbar(errors.join('\n'), 'error')
-                  } else if (errorData.errors && typeof errorData.errors === 'object') {
-                    const errors = Object.values(errorData.errors).flat()
-                    this.showSnackbar(errors.join('\n'), 'error')
-                  } else {
-                    this.showSnackbar(errorData.errors, 'error')
-                  }
-                }
-              }, err => {
-                this.loading = false
-                const errorData = err.body
-                if (errorData.errors && Array.isArray(errorData.errors)) {
-                  const errors = errorData.errors
-                  this.showSnackbar(errors.join('\n'), 'error')
-                } else if (errorData.errors && typeof errorData.errors === 'object') {
-                  const errors = Object.values(errorData.errors).flat()
-                  this.showSnackbar(errors.join('\n'), 'error')
-                } else {
-                  this.showSnackbar('Invalid data', 'error')
-                }
-              })
-            } else {
-              this.snackbar = true
-              this.color = 'error'
-              this.text = 'Please make sure to add inclusions and exclusions'
-            }
-          } else {
-            this.snackbar = true
-            this.color = 'error'
-            this.text = 'Please provide at least one side activity'
-          }
-        }
-      } else {
-        this.snackbar = true
-        this.color = 'error'
-        this.text = 'Please fill all required fields'
+      for (let i = 0; i < this.activity.activityIncludes.length; i++) {
+        formData.append('activity_includes[]', this.activity.activityIncludes[i])
       }
+
+      for (let i = 0; i < this.activity.activityExcludes.length; i++) {
+        formData.append('activity_excludes[]', this.activity.activityExcludes[i])
+      }
+
+      if (this.activity.sideActivity.length > 0) {
+        for (let i = 0; i < this.activity.sideActivity.length; i++) {
+          formData.append(
+            'side_activity[' + i + '][time]',
+            this.type === 'edit' ? this.activity.sideActivity[i].activityTime : this.activity.sideActivity[i].sideActivityTime
+          )
+          formData.append(
+            'side_activity[' + i + '][day_number]',
+            this.type === 'edit' ? this.activity.sideActivity[i].activityDayNumber : this.activity.sideActivity[i].sideActivityDayNumber
+          )
+          formData.append(
+            'side_activity[' + i + '][name]',
+            this.type === 'edit' ? this.activity.sideActivity[i].activityName : this.activity.sideActivity[i].sideActivityName
+          )
+        }
+      }
+
+      for (let i = 0; i < this.activity.start_days.length; i++) {
+        formData.append('start_days[' + i + ']', this.activity.start_days[i])
+      }
+
+      for (let i = 0; i < this.image.length; i++) {
+        formData.append('activity_image[]', this.image[i], this.image[i].name)
+      }
+
+      this.activity.availabilities.forEach((availability, index) => {
+        formData.append(`availabilities[${index}][from_date]`, availability.from_date)
+        formData.append(`availabilities[${index}][to_date]`, availability.to_date)
+
+        availability.pricingtiers.forEach((pricingTier, tierIndex) => {
+          formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][name]`, pricingTier.name)
+          formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][min]`, pricingTier.min)
+          formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][max]`, pricingTier.max)
+          formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][adult_price]`, pricingTier.adult_price)
+          formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][max_child]`, pricingTier.max_child)
+          formData.append(`availabilities[${index}][pricingtiers][${tierIndex}][child_percentage]`, pricingTier.child_percentage)
+        })
+      })
+
+      if (this.type === 'edit') formData.append('_method', 'PUT')
+
+      const endpoint = this.type === 'add' ? addActivity : updateActivity(this.data.activityID)
+
+      this.$http.post(endpoint, formData, { headers: headers(this.$cookies.get('userToken')) })
+        .then(response => {
+          this.loading = false
+          if (response.body.status === 200) {
+            this.snackbar = true
+            this.color = 'success'
+            this.text = this.type === 'add' ? 'Added successfully' : 'Updated successfully'
+            this.$emit('added')
+            this.$refs.form.resetValidation()
+          } else {
+            this.showSnackbar('Failed to update. Please try again.', 'error')
+          }
+        })
+        // eslint-disable-next-line handle-callback-err
+        .catch(err => {
+          this.loading = false
+          this.showSnackbar('Error occurred while updating', 'error')
+        })
     },
     addNewAvailability () {
       // Validate the date before adding a new availability
