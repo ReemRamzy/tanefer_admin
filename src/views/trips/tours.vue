@@ -1167,7 +1167,8 @@ export default {
     removeTour () {
       this.$http.delete(removePackage(this.deletedItemId), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
         this.removePackageDialog = false
-        if (response.status === 200) {
+        console.log(response.data.status)
+        if (response.data.status === 200) {
           this.snackbar = true
           this.color = 'success'
           this.text = 'Tour was deleted'
@@ -1175,7 +1176,7 @@ export default {
         } else {
           this.snackbar = true
           this.color = 'error'
-          this.text = response.body.message
+          this.text = response.data.message
         }
       }, err => {
         this.snackbar = true

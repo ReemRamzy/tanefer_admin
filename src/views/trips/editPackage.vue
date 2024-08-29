@@ -53,6 +53,7 @@
                         >
                         </v-text-field>
                         <v-row justify="space-between" align="center" no-gutters>
+                        <v-checkbox v-model="tour.is_published" label="Published Package"></v-checkbox>
                         <v-checkbox
                         v-model="tour.is_top"
                         label="Is top tour"
@@ -967,6 +968,7 @@ export default {
       actionType: 'add',
       tour: {
         packageTitle: '',
+        is_published: true,
         internationalairport: false,
         packagestartingairport: '',
         packageOverview: '',
@@ -1088,6 +1090,11 @@ export default {
         if (response.body.status === 200) {
           const dataResponse = response.body.data
           this.tour.packageTitle = dataResponse.packageTitle
+          if (dataResponse.is_published === '0') {
+            this.tour.is_published = false
+          } else {
+            this.tour.is_published = true
+          }
           if (dataResponse.isTop === '0') {
             this.tour.is_top = false
           } else {
@@ -1580,6 +1587,7 @@ export default {
       const formData = new FormData()
       formData.append('_method', 'PUT')
       formData.append('package_title', this.tour.packageTitle)
+      formData.append('is_published', this.tour.published ? 1 : 0)
       formData.append('package_overview', this.tour.packageOverview)
       formData.append('package_duration', this.tour.packageDuration)
       formData.append('package_nights_number', this.tour.packageNightsNumber)

@@ -231,7 +231,7 @@ export default {
     removeActivity () {
       this.$http.delete(removeActivity(this.deletedItemId), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
         this.removeActivityDialog = false
-        if (response.body.status === 200) {
+        if (response.data.status === 200) {
           this.getActivities(15, 1)
           this.snackbar = true
           this.color = 'success'
@@ -239,7 +239,7 @@ export default {
         } else {
           this.snackbar = true
           this.color = 'error'
-          this.text = response.body.message
+          this.text = response.data.message
         }
       }, err => {
         this.snackbar = true

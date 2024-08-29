@@ -316,6 +316,7 @@
               color="blue"
               >
               </v-text-field>
+              <v-checkbox v-model="editingCruise.is_published" label="Published Cruise"></v-checkbox>
               <v-text-field
               label="Cruise sort"
               v-model="editingCruise.sort"
@@ -1083,7 +1084,8 @@ export default {
       room_inclusion: '',
       room_aminity: '',
       room_category: '',
-      firstLoad: true
+      firstLoad: true,
+      is_published: true
     }
   },
   computed: {
@@ -1255,6 +1257,7 @@ export default {
       const formData = new FormData()
       formData.append('_method', 'PUT')
       formData.append('name', this.editingCruise.name)
+      formData.append('is_published', this.editingCruise.is_published ? 1 : 0)
       formData.append('sort', this.editingCruise.sort)
       formData.append('cruise_line', this.editingCruise.cruise_line)
       formData.append('ship_name', this.editingCruise.ship_name)

@@ -216,6 +216,7 @@
                 >
                 </v-text-field>
                 <v-row justify="space-between" align="center" no-gutters>
+                  <v-checkbox v-model="editingTour.is_published" label="Published Package"></v-checkbox>
                   <v-checkbox
                   v-model="editingTour.isTop"
                   label="Is top tour"
@@ -1226,6 +1227,7 @@ export default {
       if (this.editingTour.buspackagePricePerPerson) formData.append('bus_packageprice', this.editingTour.buspackagePricePerPerson)
       formData.append('children_percentage', this.editingTour.childrenpercentage)
       formData.append('single_supplement_percentage', this.editingTour.single_supplement_percentage)
+      if (this.editingTour.is_published) formData.append('is_top', this.editingTour.is_published ? 1 : 0)
       if (this.editingTour.isTop) formData.append('is_top', this.editingTour.isTop ? 1 : 0)
       if (this.editingTour.rank) formData.append('rank', this.editingTour.rank)
       if (this.checkbox === true) {

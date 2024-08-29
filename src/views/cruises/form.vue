@@ -53,6 +53,7 @@
                     color="blue"
                     >
                     </v-text-field>
+                    <v-checkbox v-model="cruise.is_published" label="Published Cruise"></v-checkbox>
                     <v-text-field
                     v-model="cruise.sort"
                     label="sort cruise"
@@ -1017,6 +1018,7 @@ export default {
       const formData = new FormData()
       formData.append('_method', 'POST')
       formData.append('name', this.cruise.name)
+      formData.append('is_published', this.cruise.is_published ? 1 : 0)
       formData.append('sort', this.cruise.sort)
       formData.append('cruise_line', this.cruise.cruise_line)
       formData.append('number_of_nights', this.cruise.number_of_nights)
