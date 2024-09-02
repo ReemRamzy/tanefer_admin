@@ -32,6 +32,9 @@
                                 <th class="text-left">
                                     Status
                                 </th>
+                                <th class="text-left">
+                                    Action Status
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,6 +50,9 @@
                                 </td>
                                 <td class="text-left">
                                     ${{bookingDetails.total_price}}
+                                </td>
+                                <td class="text-left">
+                                    {{ bookingDetails.status === null ? 'pending' : bookingDetails.status }}
                                 </td>
                                 <td class="text-left">
                                     <span v-if="bookingDetails.status === null">

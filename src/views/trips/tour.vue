@@ -1167,6 +1167,11 @@ export default {
         this.loading = false
         if (response.body.status === 200) {
           this.tour = response.body.data
+          this.tour.is_published = false
+          // console.log(this.tour.is_published)
+          if (this.tour.is_published === 1) {
+            this.tour.is_published = true
+          }
           this.editingTour = { ...this.tour }
           if (this.editingTour.starting_airport !== 'null') this.checkbox = true
           if (this.$refs.cityForm) this.$refs.cityForm.resetValidation()
@@ -1227,7 +1232,7 @@ export default {
       if (this.editingTour.buspackagePricePerPerson) formData.append('bus_packageprice', this.editingTour.buspackagePricePerPerson)
       formData.append('children_percentage', this.editingTour.childrenpercentage)
       formData.append('single_supplement_percentage', this.editingTour.single_supplement_percentage)
-      if (this.editingTour.is_published) formData.append('is_top', this.editingTour.is_published ? 1 : 0)
+      if (this.editingTour.is_published) formData.append('is_published', this.editingTour.is_published ? 1 : 0)
       if (this.editingTour.isTop) formData.append('is_top', this.editingTour.isTop ? 1 : 0)
       if (this.editingTour.rank) formData.append('rank', this.editingTour.rank)
       if (this.checkbox === true) {

@@ -1090,7 +1090,7 @@ export default {
         if (response.body.status === 200) {
           const dataResponse = response.body.data
           this.tour.packageTitle = dataResponse.packageTitle
-          if (dataResponse.is_published === '0') {
+          if (dataResponse.is_published === 0) {
             this.tour.is_published = false
           } else {
             this.tour.is_published = true
@@ -1587,7 +1587,7 @@ export default {
       const formData = new FormData()
       formData.append('_method', 'PUT')
       formData.append('package_title', this.tour.packageTitle)
-      formData.append('is_published', this.tour.published ? 1 : 0)
+      formData.append('is_published', this.tour.is_published ? 1 : 0)
       formData.append('package_overview', this.tour.packageOverview)
       formData.append('package_duration', this.tour.packageDuration)
       formData.append('package_nights_number', this.tour.packageNightsNumber)

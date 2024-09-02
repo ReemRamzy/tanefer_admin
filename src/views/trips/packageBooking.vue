@@ -72,9 +72,9 @@
                                 <th class="text-left">
                                     Children
                                 </th>
-                                <!-- <th class="text-left">
+                                <th class="text-left">
                                     Status
-                                </th> -->
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -84,6 +84,9 @@
                                 </td>
                                 <td class="text-left">
                                     {{ bookingDetails.children }}
+                                </td>
+                                <td class="text-left">
+                                    {{bookingDetails.status}}
                                 </td>
                                 <!-- <td class="text-left">
                                     <span v-if="bookingDetails.status === 'pending payment' && checkHasCruise === true">

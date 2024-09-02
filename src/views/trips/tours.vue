@@ -43,6 +43,24 @@
                     </v-text-field>
                     <v-row justify="space-between" align="center" no-gutters>
                       <v-checkbox
+                      v-model="tour.is_publish"
+                      label="Is top tour"
+                      ></v-checkbox>
+                      <v-col cols="12" sm="4" v-if="tour.is_publish">
+                        <v-text-field
+                        label="Publish"
+                        v-model="tour.is_publish"
+                        type="number"
+                        min="1"
+                        outlined
+                        :rules="[v => !!v || 'Publish is required', v => /^[0-9]*$/.test(v) || 'Publish must be an integer number', v => v > 0 || 'Publish must be greater than zero']"
+                        color="blue"
+                        >
+                        </v-text-field>
+                      </v-col>
+                    </v-row>
+                    <v-row justify="space-between" align="center" no-gutters>
+                      <v-checkbox
                       v-model="tour.is_top"
                       label="Is top tour"
                       ></v-checkbox>
@@ -856,7 +874,9 @@ export default {
         expectedPrice: 0,
         cities: [],
         is_top: false,
+        is_publish: false,
         rank: null,
+        publish: null,
         startDays: [],
         tourSeasons: [],
         slug: '',
@@ -1042,7 +1062,9 @@ export default {
         expectedPrice: 0,
         cities: [],
         is_top: false,
+        is_publish: false,
         rank: null,
+        publish: null,
         startDays: [],
         tourSeasons: [],
         slug: '',
@@ -1098,6 +1120,7 @@ export default {
         formData.append('meta_title', this.tour.packageMetaTitle)
         formData.append('meta_desc', this.tour.packageMetaDesc)
         if (this.tour.is_top) formData.append('is_top', this.tour.is_top ? 1 : 0)
+        if (this.tour.is_publish) formData.append('is_publish', this.tour.is_publish ? 1 : 0)
         if (this.tour.rank) formData.append('rank', this.tour.rank)
         for (let i = 0; i < this.tour.cities.length; i++) {
           formData.append('package_cities[' + i + '][city_id]', this.tour.cities[i].id)
