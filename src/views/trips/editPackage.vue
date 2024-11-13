@@ -866,96 +866,137 @@
 
                 <v-stepper-content step="3">
                   <v-form ref="roomsForm" v-model="roomsFormValid">
-    <p class="font-weight-bold">Package City Hotel</p>
-    <div v-if="accommodations.length > 0">
-      <p class="font-weight-bold">You Have Selected:</p>
-      {{ recommendedHotel }}
-    </div>
-    <!-- Form for adding a new city and hotels -->
-    <v-card class="px-7 pt-7 pb-1" style="border-radius: 15px;">
-      <v-row>
-                              <v-col cols="12" sm="4">
-                                  <v-select
-                                  v-model="packageCityPerHotel"
-                                  :items="cities"
-                                  item-value="CityID"
-                                  item-text="CityName"
-                                  color="blue"
-                                  outlined
-                                  label="Package City"
-                                  >
-                                  </v-select>
-                                </v-col>
-                             <v-col cols="12" md="6">
-          <v-menu
-            v-model="destMenu"
-            :close-on-content-click="true"
-            transition="scale-transition"
-            offset-y
-            max-height="300"
-          >
-            <template #activator="{ on, attrs }">
-              <v-text-field
-                ref="queryInput"
-                v-model="query"
-                prepend-inner-icon="mdi-map-marker"
-                label="Destination"
-                placeholder="Search for zones..."
-                solo
-                outlined
-                hide-details
-                v-bind="attrs"
-                v-on="on"
-                @input="handleInput"
-              />
-            </template>
-            <template v-if="isloading">
-              <div style="display: flex; justify-content: center; background-color: white; height: 100%;">
-                <v-progress-circular indeterminate color="primary" />
-              </div>
-            </template>
-            <v-list v-else style="overflow-y: auto; max-height: 300px;">
-              <v-list-item v-for="zone in filteredZones" :key="zone.id" @click="handleZoneSelection(zone)">
-                <v-list-item-content>
-                  <v-list-item-title>{{ zone.name }}</v-list-item-title>
-                  <v-list-item-subtitle v-if="zone.parent_name">
-                    {{ zone.parent_name }}
-                    <span v-if="zone.grandparent_name">, {{ zone.grandparent_name }}</span>
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-select
-        v-model="recommendedHotel"
-        :items="filteredHotels"
-        item-value="id"
-        item-text="name"
-        color="green"
-        outlined
-        label="Admin Recommended Hotel"
-      >
-            <template v-slot:prepend-item>
-              <v-text-field
-                v-model="searchTerm"
-                append-icon="mdi-magnify"
-                label="Search hotels"
-                single-line
-                hide-details
-              ></v-text-field>
-              <div v-if="isHotelsLoading" style="text-align: center; padding: 10px;">
-                <v-progress-circular indeterminate color="primary" />
-              </div>
-            </template>
-          </v-select>
-        </v-col>
-      </v-row>
-    </v-card>
+  <p class="font-weight-bold">Package City Hotel</p>
+  <!-- <div v-if="accommodations.length > 0">
+  <p class="font-weight-bold">Selected Accommodations:</p>
+  <ul>
+    <li v-for="(accom, index) in accommodations" :key="index">
+      <strong>City:</strong> {{ accom.city.name }} <br>
+      <strong>Recommended Hotel:</strong> {{ accom.hotel ? accom.hotel.name : 'Unknown Hotel' }}<br>
+      <strong>Hotel IDs:</strong> {{ accom.hotels.map(h => h.id).join(', ') }}
+      <v-btn color="red" @click="deleteAccommodation(index, accom)">Delete</v-btn>
+    </li>
+  </ul>
+</div> -->
+<div v-if="accommodations.length > 0">
+  <v-row dense>
+    <v-col v-for="(accom, index) in accommodations" :key="index" cols="12" md="6" lg="4">
+      <v-card class="pa-4 mb-4" outlined>
+        <!-- City Name -->
+        <v-card-title class="gold-text">
+          {{ accom.city.name }}
+        </v-card-title>
 
-    <v-btn @click="addCityHotelEntry" color="primary" class="mb-4 mt-2">Add City and Hotels</v-btn>
-  </v-form>
+        <!-- Recommended Hotel -->
+        <v-card-subtitle class="mt-2 mb-4">
+          <span class="gold-text">Recommended Hotel:</span> {{ accom.recommendedHotel.name }}
+        </v-card-subtitle>
+
+        <!-- Other Hotels in the City -->
+        <!-- <v-card-text>
+          <span class="gold-text">Other Hotels in City:</span>
+          <ul>
+            <li v-for="hotel in accom.hotels" :key="hotel.id">
+              {{ hotel.name }}
+            </li>
+          </ul>
+        </v-card-text> -->
+      </v-card>
+    </v-col>
+  </v-row>
+</div>
+
+  <!-- Form for adding a new city and hotels -->
+  <v-card class="px-7 pt-7 pb-1" style="border-radius: 15px;">
+    <v-row>
+      <!-- Select Package City -->
+      <v-col cols="12" sm="4">
+        <v-select
+          v-model="packageCityPerHotel"
+          :items="cities"
+          item-value="CityID"
+          item-text="CityName"
+          color="blue"
+          outlined
+          label="Package City"
+        >
+        </v-select>
+      </v-col>
+
+      <!-- Search and Select Hotels for the City -->
+      <v-col cols="12" md="6">
+        <v-menu
+          v-model="destMenu"
+          :close-on-content-click="true"
+          transition="scale-transition"
+          offset-y
+          max-height="300"
+        >
+          <template #activator="{ on, attrs }">
+            <v-text-field
+              ref="queryInput"
+              v-model="query"
+              prepend-inner-icon="mdi-map-marker"
+              label="Destination"
+              placeholder="Search for zones..."
+              solo
+              outlined
+              hide-details
+              v-bind="attrs"
+              v-on="on"
+              @input="handleInput"
+            />
+          </template>
+          <template v-if="isloading">
+            <div style="display: flex; justify-content: center; background-color: white; height: 100%;">
+              <v-progress-circular indeterminate color="primary" />
+            </div>
+          </template>
+          <v-list v-else style="overflow-y: auto; max-height: 300px;">
+            <v-list-item v-for="zone in filteredZones" :key="zone.id" @click="handleZoneSelection(zone)">
+              <v-list-item-content>
+                <v-list-item-title>{{ zone.name }}</v-list-item-title>
+                <v-list-item-subtitle v-if="zone.parent_name">
+                  {{ zone.parent_name }}
+                  <span v-if="zone.grandparent_name">, {{ zone.grandparent_name }}</span>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
+
+      <!-- Select Recommended Hotel -->
+      <v-col cols="12" md="6">
+        <v-select
+          v-model="recommendedHotel"
+          :items="filteredHotels"
+          item-value="id"
+          item-text="name"
+          color="green"
+          outlined
+          label="Admin Recommended Hotel"
+        >
+          <template v-slot:prepend-item>
+            <v-text-field
+              v-model="searchTerm"
+              append-icon="mdi-magnify"
+              label="Search hotels"
+              single-line
+              hide-details
+            ></v-text-field>
+            <div v-if="isHotelsLoading" style="text-align: center; padding: 10px;">
+              <v-progress-circular indeterminate color="primary" />
+            </div>
+          </template>
+        </v-select>
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <v-btn @click="addCityHotelEntry" color="primary" class="mb-4 mt-2">Add City and Hotels</v-btn>
+</v-form>
+
                     <v-row>
                       <v-btn
                       color="warning"
@@ -1137,10 +1178,10 @@ export default {
       perZoneHotels: [],
       isloading: false,
       searchTerm: '',
-      accommodations: [], // Array to hold multiple city-hotel pairs
+      accommodations: [],
       selectedHotels: [],
-      isHotelsLoading: false, // Flag to show loading indicator in hotels dropdown
-      isHotelsAdded: false, // Flag to indicate when hotels are added
+      isHotelsLoading: false,
+      isHotelsAdded: false,
       recommendedHotel: null,
       packageCityPerHotel: ''
     }
@@ -1156,40 +1197,138 @@ export default {
     },
     filteredHotels: {
       get () {
-      // Filter `gtaHotels` based on `searchTerm`, with a check to ensure `hotel.name` exists
         if (!this.searchTerm) return this.gtaHotels
         return this.gtaHotels.filter(hotel =>
           hotel.name && hotel.name.toLowerCase().includes(this.searchTerm.toLowerCase())
         )
       },
       set (value) {
-      // Optional setter - can log or handle unexpected assignments
         console.warn('filteredHotels was set:', value)
       }
     }
   },
   methods: {
+    async deleteAccommodation (index, accommodation) {
+      try {
+      // Assuming the accommodation has a unique ID or identifier
+        if (accommodation.id) {
+          await this.$http.delete(`/api/accommodations/${accommodation.id}`)
+        }
+
+        // Remove from local `accommodations` array
+        this.accommodations.splice(index, 1)
+      } catch (error) {
+        console.error('Error deleting accommodation:', error)
+      }
+    },
+    // addCityHotelEntry () {
+    //   // Log the values to check if they’re assigned correctly
+    //   console.log('Selected Package City ID:', this.packageCityPerHotel)
+    //   console.log('Selected Recommended Hotel:', this.recommendedHotel)
+
+    //   if (this.packageCityPerHotel && this.selectedHotels.length > 0 && this.recommendedHotel) {
+    //     // Store the current city-hotel selection in accommodations
+    //     const city = this.cities.find(city => city.CityID === this.packageCityPerHotel)
+
+    //     this.accommodations.push({
+    //       package_city_id: this.packageCityPerHotel, // Store selected package city ID
+    //       hotels: [...this.selectedHotels], // All selected hotel IDs
+    //       recommendedHotel: this.recommendedHotel, // Admin recommended hotel ID
+    //       cityName: city ? city.CityName : '',
+    //       recommendedHotelName: this.filteredHotels.find(h => h.id === this.recommendedHotel)?.name || ''
+    //     })
+
+    //     // Reset for next entry
+    //     this.packageCityPerHotel = null
+    //     this.selectedHotels = []
+    //     this.recommendedHotel = null
+    //     this.filteredHotels = []
+    //   } else {
+    //     this.snackbar = true
+    //     this.color = 'error'
+    //     this.text = 'Please select a city, hotels, and a recommended hotel before adding.'
+    //   }
+    // },
     addCityHotelEntry () {
-      if (this.selectedZone && this.selectedHotels.length > 0 && this.packageCityPerHotel) {
+      // Log the values to check if they’re assigned correctly
+      console.log('Selected Package City ID:', this.packageCityPerHotel)
+      console.log('Selected Recommended Hotel:', this.recommendedHotel)
+
+      if (this.packageCityPerHotel && this.selectedHotels.length > 0 && this.recommendedHotel) {
+        // Find the selected city and recommended hotel details
+        const city = this.cities.find(city => city.CityID === this.packageCityPerHotel)
+        const recommendedHotelDetails = this.filteredHotels.find(h => h.id === this.recommendedHotel)
+
+        // Ensure the new entry matches the expected structure in `this.accommodations`
         this.accommodations.push({
-          city: this.selectedZone,
-          city_id: this.packageCityPerHotel.CityID, // Include the selected city ID
-          hotels: [...this.selectedHotels], // All selected hotel IDs
-          recommendedHotel: this.recommendedHotel // Admin recommended hotel
+          city: {
+            name: city ? city.CityName : 'Unknown City',
+            id: this.packageCityPerHotel
+          },
+          hotels: this.selectedHotels.map(hotelId => {
+            // Find hotel details for each selected hotel ID
+            const hotelDetails = this.filteredHotels.find(h => h.id === hotelId)
+            return hotelDetails || { id: hotelId, name: 'Unknown Hotel' } // Fallback if details not found
+          }),
+          recommendedHotel: recommendedHotelDetails || { name: 'Unknown Hotel' }
         })
 
-        // Reset selections for the next entry
-        this.selectedZone = null
+        // Reset for next entry
+        this.packageCityPerHotel = null
         this.selectedHotels = []
         this.recommendedHotel = null
-        this.packageCityPerHotel = null
         this.filteredHotels = []
       } else {
         this.snackbar = true
         this.color = 'error'
-        this.text = 'Please select a city, package city, and at least one hotel before adding.'
+        this.text = 'Please select a city, hotels, and a recommended hotel before adding.'
       }
     },
+
+    // addCityHotelEntry () {
+    //   if (this.packageCityPerHotel && this.selectedHotels.length > 0 && this.recommendedHotel) {
+    //   // Store the current city-hotel selection in accommodations
+    //     const city = this.cities.find(city => city.CityID === this.packageCityPerHotel)
+
+    //     this.accommodations.push({
+    //       package_city_id: this.packageCityPerHotel, // Store selected package city ID
+    //       hotels: [...this.selectedHotels], // All selected hotel IDs
+    //       recommendedHotel: this.recommendedHotel, // Admin recommended hotel ID
+    //       cityName: city ? city.CityName : '',
+    //       recommendedHotelName: this.filteredHotels.find(h => h.id === this.recommendedHotel)?.name || ''
+    //     })
+
+    //     // Reset for next entry
+    //     this.packageCityPerHotel = null
+    //     this.selectedHotels = []
+    //     this.recommendedHotel = null
+    //     this.filteredHotels = []
+    //   } else {
+    //     this.snackbar = true
+    //     this.color = 'error'
+    //     this.text = 'Please select a city, hotels, and a recommended hotel before adding.'
+    //   }
+    // },
+    // addCityHotelEntry () {
+    //   if (this.selectedZone && this.selectedHotels.length > 0 && this.packageCityPerHotel) {
+    //     this.accommodations.push({
+    //       city: this.selectedZone,
+    //       city_id: this.packageCityPerHotel.CityID, // Include the selected city ID
+    //       hotels: [...this.selectedHotels], // All selected hotel IDs
+    //       recommendedHotel: this.recommendedHotel // Admin recommended hotel
+    //     })
+
+    //     this.selectedZone = null
+    //     this.selectedHotels = []
+    //     this.recommendedHotel = null
+    //     this.packageCityPerHotel = null
+    //     this.filteredHotels = []
+    //   } else {
+    //     this.snackbar = true
+    //     this.color = 'error'
+    //     this.text = 'Please select a city, package city, and at least one hotel before adding.'
+    //   }
+    // },
     // addCityHotelEntry () {
     //   // Adds the selected city and hotels to accommodations array
     //   if (this.selectedCity && this.selectedHotels.length > 0) {
@@ -1313,7 +1452,6 @@ export default {
       try {
         let hotels = []
 
-        // Fetch hotels based on zone type
         if (zone.area_type === 'CTY') {
           const cityId = await this.getCityIdByJpdCode(zone.jpd_code)
           hotels = await this.getGtaHotelsPerCity(cityId)
@@ -1323,21 +1461,17 @@ export default {
           hotels = await this.getGtaHotelsPerZone(zone.id)
         }
 
-        // Update gtaHotels with fetched hotels
         this.gtaHotels = hotels
 
-        // Automatically select all hotels by their IDs for the selected zone
+        this.filteredHotels = this.gtaHotels
         this.selectedHotels = this.gtaHotels.map(hotel => hotel.id)
 
-        // Set flag to indicate hotels were added
         this.isHotelsAdded = true
 
-        // Save selected city for reference
         this.selectedCity = zone
       } catch (error) {
         console.error('Error fetching hotels:', error)
       } finally {
-        // Stop loading indicator after fetching
         this.isHotelsLoading = false
       }
 
@@ -1509,16 +1643,37 @@ export default {
         if (response.body.status === 200) {
           const dataResponse = response.body.data
 
-          // Map `package_hotel` data to `accommodations` with preselected hotels
-          this.accommodations = dataResponse.package_hotel.map(hotelData => ({
-            city: {
-              name: hotelData.city_name || 'Unknown City', // Use 'Unknown City' if city name is null
-              id: hotelData.city_id
-            },
-            hotels: hotelData.hotelIDs || [], // List of hotel IDs for this city
-            hotelDetails: hotelData.hotels || [] // Detailed hotel information, if available
-          }))
+          // // Map `package_hotel` data to `accommodations` with preselected hotels and details
+          // this.accommodations = dataResponse.package_hotel.map(hotelData => ({
+          //   package_city_id: hotelData.city_id, // City ID for package
+          //   cityName: hotelData.city_name || 'Unknown City', // Use city name or default to 'Unknown City'
+          //   hotels: hotelData.hotelIDs || [], // Array of hotel IDs
+          //   recommendedHotel: hotelData.hotelIDs[0] || null, // Default recommended hotel to the first hotel in the list (if any)
+          //   hotelDetails: hotelData.hotels || [] // Full details of hotels for display purposes
+          // }))
+          // Map `package_hotel` data to `accommodations` with full hotel details, using `hotelData.hotel` for the recommended hotel
+          // this.accommodations = dataResponse.package_hotel.map(hotelData => {
+          //   return {
+          //     city: {
+          //       name: hotelData.city_name || 'Unknown City',
+          //       id: hotelData.city_id
+          //     },
+          //     hotels: hotelData.hotels || [], // All hotels for this city
+          //     recommendedHotel: hotelData.hotel || { name: 'Unknown Hotel' } // Use the `hotel` object directly for recommended
+          //   }
+          // })
+          const packageHotel = dataResponse.package_hotel[0] // Access the first item
+          const accommodations = packageHotel.accommodations || [] // Retrieve accommodations from the first item
 
+          // Map `accommodations` data to be used in the template
+          this.accommodations = accommodations.map(accom => ({
+            city: {
+              name: accom.city_name || 'Unknown City',
+              id: accom.city_id
+            },
+            recommendedHotel: accom.recommended_hotel || { name: 'Unknown Hotel' },
+            hotels: accom.hotels || []
+          }))
           // Map other tour-related data
           this.tour.packageTitle = dataResponse.packageTitle
           this.tour.packageOverview = dataResponse.packageOverview
@@ -1526,7 +1681,7 @@ export default {
           this.tour.packageNightsNumber = dataResponse.packageNightsNumber
           this.tour.additionalCost = dataResponse.additionalprice
           this.tour.discountPercent = dataResponse.discountprecentage
-          this.tour.availabilities = dataResponse.availabilities.map((day, index) => ({
+          this.tour.availabilities = dataResponse.availabilities.map(day => ({
             from_date: day.from_date,
             to_date: day.to_date,
             days: day.days
@@ -1551,7 +1706,7 @@ export default {
             cruise_id: activity.cruise_id,
             type: activity.type,
             number_of_days: activity.days_number,
-            days: activity.days.map((day, dayIndex) => ({
+            days: activity.days.map(day => ({
               day_order: day.day_number,
               adventures: day.adventures || [],
               list_adventures: day.list_adventures || [],
@@ -2083,21 +2238,41 @@ export default {
       //     }
       //   }
       // }
+      console.log(this.accommodations)
+      // if (this.accommodations && this.accommodations.length > 0) {
+      //   for (let a = 0; a < this.accommodations.length; a++) {
+      //     const accommodation = this.accommodations[a]
 
+      //     // Ensure package_city_id is appended for each accommodation
+      //     formData.append(`accommodation[${a}][package_city_id]`, accommodation.package_city_id || '')
+
+      //     // Append recommended hotel
+      //     formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel || '')
+
+      //     // Append all selected hotel IDs
+      //     if (accommodation.hotels && accommodation.hotels.length > 0) {
+      //       accommodation.hotels.forEach((hotelId, hIndex) => {
+      //         formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotelId)
+      //       })
+      //     } else {
+      //       formData.append(`accommodation[${a}][hotels]`, [])
+      //     }
+      //   }
+      // }
       if (this.accommodations && this.accommodations.length > 0) {
         for (let a = 0; a < this.accommodations.length; a++) {
           const accommodation = this.accommodations[a]
 
-          // Append the associated city ID
-          formData.append(`accommodation[${a}][city_id]`, accommodation.city_id || '')
+          // Ensure package_city_id is appended for each accommodation
+          formData.append(`accommodation[${a}][package_city_id]`, accommodation.city.id || '')
 
-          // Add the recommended hotel for each accommodation entry
-          formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel || '')
+          // Append recommended hotel ID instead of the entire object
+          formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel.id || '')
 
-          // Add all selected hotel IDs as a flat array of values
+          // Append all selected hotel IDs
           if (accommodation.hotels && accommodation.hotels.length > 0) {
-            accommodation.hotels.forEach(hotelId => {
-              formData.append(`accommodation[${a}][hotels][]`, hotelId)
+            accommodation.hotels.forEach((hotel, hIndex) => {
+              formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotel.id || '')
             })
           } else {
             formData.append(`accommodation[${a}][hotels]`, [])
@@ -2282,3 +2457,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+.gold-text {
+  color: #DAA520;
+  font-weight: bold;
+}
+</style>
