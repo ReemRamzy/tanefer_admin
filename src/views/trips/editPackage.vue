@@ -878,50 +878,49 @@
     </li>
   </ul>
 </div> -->
-<div v-if="accommodations.length > 0">
-  <v-row dense>
-    <v-col v-for="(accom, index) in accommodations" :key="index" cols="12" md="6" lg="4">
-      <v-card class="pa-4 mb-4" outlined>
-        <!-- City Name -->
-        <v-card-title class="gold-text">
-          {{ accom.city.name }}
-        </v-card-title>
+    <div v-if="accommodations.length > 0">
+      <v-row dense>
+        <v-col v-for="(accom, index) in accommodations" :key="index" cols="12" md="6" lg="4">
+          <v-card class="pa-4 mb-4" outlined>
+            <!-- City Name -->
+            <v-card-title class="gold-text">
+              {{ accom.city.name }}
+            </v-card-title>
 
-        <!-- Recommended Hotel -->
-        <v-card-subtitle class="mt-2 mb-4">
-          <span class="gold-text">Recommended Hotel:</span> {{ accom.recommendedHotel.name }}
-        </v-card-subtitle>
+            <!-- Recommended Hotel -->
+            <v-card-subtitle class="mt-2 mb-4">
+              <span class="gold-text">Recommended Hotel:</span> {{ accom.recommendedHotel.name }}
+            </v-card-subtitle>
 
-        <!-- Other Hotels in the City -->
-        <!-- <v-card-text>
-          <span class="gold-text">Other Hotels in City:</span>
-          <ul>
-            <li v-for="hotel in accom.hotels" :key="hotel.id">
-              {{ hotel.name }}
-            </li>
-          </ul>
-        </v-card-text> -->
-      </v-card>
-    </v-col>
-  </v-row>
-</div>
+            <!-- Checkbox to Mark for Deletion -->
+            <v-checkbox
+              v-model="accom.markedForDeletion"
+              label="Mark for Deletion"
+              class="mt-4"
+              color="red"
+              @change="toggleMarkForDeletion(accom)"
+            ></v-checkbox>
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
 
-  <!-- Form for adding a new city and hotels -->
-  <v-card class="px-7 pt-7 pb-1" style="border-radius: 15px;">
-    <v-row>
-      <!-- Select Package City -->
-      <v-col cols="12" sm="4">
-        <v-select
-          v-model="packageCityPerHotel"
-          :items="cities"
-          item-value="CityID"
-          item-text="CityName"
-          color="blue"
-          outlined
-          label="Package City"
-        >
-        </v-select>
-      </v-col>
+      <!-- Form for adding a new city and hotels -->
+      <v-card class="px-7 pt-7 pb-1" style="border-radius: 15px;">
+        <v-row>
+          <!-- Select Package City -->
+          <v-col cols="12" sm="4">
+            <v-select
+              v-model="packageCityPerHotel"
+              :items="cities"
+              item-value="CityID"
+              item-text="CityName"
+              color="blue"
+              outlined
+              label="Package City"
+            >
+            </v-select>
+          </v-col>
 
       <!-- Search and Select Hotels for the City -->
       <v-col cols="12" md="6">
@@ -994,7 +993,7 @@
     </v-row>
   </v-card>
 
-  <v-btn @click="addCityHotelEntry" color="primary" class="mb-4 mt-2">Add City and Hotels</v-btn>
+  <v-btn @click="addCityHotelEntry" color="primary" class="mb-4 mt-2">Confirm Selected City and Hotel</v-btn>
 </v-form>
 
                     <v-row>
@@ -1183,7 +1182,8 @@ export default {
       isHotelsLoading: false,
       isHotelsAdded: false,
       recommendedHotel: null,
-      packageCityPerHotel: ''
+      packageCityPerHotel: '',
+      markedForDeletion: []
     }
   },
   watch: {
@@ -1208,6 +1208,15 @@ export default {
     }
   },
   methods: {
+    toggleMarkForDeletion (accom) {
+      if (accom.markedForDeletion) {
+        this.markedForDeletion.push(accom)
+      } else {
+        this.markedForDeletion = this.markedForDeletion.filter(
+          item => item !== accom
+        )
+      }
+    },
     async deleteAccommodation (index, accommodation) {
       try {
       // Assuming the accommodation has a unique ID or identifier
@@ -1376,72 +1385,6 @@ export default {
         console.error(error)
       }
     },
-
-    // Handles the selection of a zone
-    // handleZoneSelection (zone) {
-    //   this.isSelecting = true
-    //   this.selectZone(zone)
-
-    //   if (zone.area_type === 'CTY') {
-    //     this.getCityIdByJpdCode(zone.jpd_code).then((cityId) => {
-    //       this.getGtaHotelsPerCity(cityId).then((hotels) => {
-    //         this.gtaHotels = hotels
-    //       }).catch((error) => {
-    //         console.error('Error fetching hotels by city:', error)
-    //       })
-    //     }).catch((error) => {
-    //       console.error('Error fetching city ID by jpd_code:', error)
-    //     })
-    //   } else if (zone.area_type === 'REG' || zone.area_type === 'LOC') {
-    //     this.searchHotelsByAddress(zone.name).then((hotels) => {
-    //       this.gtaHotels = hotels
-    //     }).catch((error) => {
-    //       console.error('Error fetching hotels by address:', error)
-    //     })
-    //   } else {
-    //     this.getGtaHotelsPerZone(zone.id).then((hotels) => {
-    //       this.gtaHotels = hotels
-    //     }).catch((error) => {
-    //       console.error('Error fetching hotels by zone ID:', error)
-    //     })
-    //   }
-
-    //   this.$nextTick(() => {
-    //     this.isSelecting = false
-    //   })
-    // },
-    // async handleZoneSelection (zone) {
-    //   // Handles selection of a zone and fetches hotels based on zone type
-    //   this.isSelecting = true
-    //   this.selectZone(zone)
-
-    //   this.isHotelsLoading = true // Start loading indicator for hotels
-
-    //   try {
-    //     let hotels
-    //     if (zone.area_type === 'CTY') {
-    //       const cityId = await this.getCityIdByJpdCode(zone.jpd_code)
-    //       hotels = await this.getGtaHotelsPerCity(cityId)
-    //     } else if (zone.area_type === 'REG' || zone.area_type === 'LOC') {
-    //       hotels = await this.searchHotelsByAddress(zone.name)
-    //     } else {
-    //       hotels = await this.getGtaHotelsPerZone(zone.id)
-    //     }
-
-    //     this.gtaHotels = hotels
-    //     this.selectedCity = zone // Save selected city
-    //     this.selectedHotels = this.gtaHotels.map(hotel => hotel.id)
-    //     this.isHotelsAdded = true // Set flag to indicate hotels were added
-    //   } catch (error) {
-    //     console.error('Error fetching hotels:', error)
-    //   } finally {
-    //     this.isHotelsLoading = false // Stop loading indicator after fetching
-    //   }
-
-    //   this.$nextTick(() => {
-    //     this.isSelecting = false
-    //   })
-    // },
     async handleZoneSelection (zone) {
       // Start selecting process
       this.isSelecting = true
@@ -1530,113 +1473,6 @@ export default {
         console.error('Error fetching hotels by zone ID:', error)
       }
     },
-    // getTour () {
-    //   this.$http.get(showPackage(this.$route.params.id), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
-    //     this.loading = false
-    //     if (response.body.status === 200) {
-    //       const dataResponse = response.body.data
-    //       this.accommodations = dataResponse.package_hotel.map(hotelData => ({
-    //         city: {
-    //           name: hotelData.city_name || 'Unknown City', // Use 'Unknown City' if city name is null
-    //           id: hotelData.city_id
-    //         },
-    //         hotels: hotelData.hotelIDs || [], // List of hotel IDs for this city
-    //         hotelDetails: hotelData.hotels || [] // Detailed hotel information, if available
-    //       }))
-    //       this.tour.packageTitle = dataResponse.packageTitle
-    //       if (dataResponse.is_published === 0) {
-    //         this.tour.is_published = false
-    //       } else {
-    //         this.tour.is_published = true
-    //       }
-    //       if (dataResponse.isTop === '0') {
-    //         this.tour.is_top = false
-    //       } else {
-    //         this.tour.is_top = true
-    //       }
-    //       const getAvailabilities = dataResponse.availabilities.map((day, index) => ({
-    //         from_date: dataResponse.availabilities[index].from_date,
-    //         to_date: dataResponse.availabilities[index].to_date,
-    //         days: dataResponse.availabilities[index].days
-    //       }))
-    //       //  index_id: this.adventure_or_cruise.length + 1,
-    //       const getActivities = dataResponse.activities.map((day, activityIndex) => ({
-    //         index_id: activityIndex,
-    //         city_id: dataResponse.activities[activityIndex].city_id,
-    //         cruise_id: dataResponse.activities[activityIndex].cruise_id,
-    //         type: dataResponse.activities[activityIndex].type,
-    //         number_of_days: dataResponse.activities[activityIndex].days_number,
-    //         days: dataResponse.activities[activityIndex].days.map((day, dayIndex) => ({
-    //           day_order: dataResponse.activities[activityIndex].days[dayIndex].day_number,
-    //           adventures: dataResponse.activities[activityIndex].days[dayIndex].days,
-    //           // list_adventures: dataResponse.activities[activityIndex].list_adventures,
-    //           list_adventures: dataResponse.activities[activityIndex].days[dayIndex].list_adventures,
-    //           current_day: dataResponse.activities[activityIndex].days[dayIndex].day_number,
-    //           day_number: ++this.day_number_start
-    //         })),
-    //         Transportation: dataResponse.activities[activityIndex].transportations.map((day, transIndex) => ({
-    //           name: dataResponse.activities[activityIndex].transportations[transIndex].transportationName,
-    //           min: dataResponse.activities[activityIndex].transportations[transIndex].transportationMin,
-    //           max: dataResponse.activities[activityIndex].transportations[transIndex].transportationMax,
-    //           price: dataResponse.activities[activityIndex].transportations[transIndex].transportationPrice
-    //         })),
-    //         cityName: dataResponse.activities[activityIndex].cityname,
-    //         cruise_name: dataResponse.activities[activityIndex].cruisename,
-    //         selectedDayActivities: dataResponse.activities[activityIndex].type === 'adventure' ? [] : dataResponse.activities[activityIndex].cruise_id,
-    //         start_day: dataResponse.activities[activityIndex].type !== 'adventure' ? Number(this.total_number_of_days) + 1 : 0,
-    //         end_day: dataResponse.activities[activityIndex].type !== 'adventure' ? Number(this.total_number_of_days) + Number(dataResponse.activities[activityIndex].days_number) : 0
-    //       }))
-
-    //       this.total_number_of_days = 0
-
-    //       for (let index = 0; index < getActivities.length; index++) {
-    //         const element = getActivities[index]
-    //         element.start_day = element.type !== 'adventure' ? Number(this.total_number_of_days) + 1 : 0
-    //         element.end_day = element.type !== 'adventure' ? Number(this.total_number_of_days) + Number(element.number_of_days) : 0
-    //         this.total_number_of_days += Number(element.number_of_days)
-    //         for (let index1 = 0; index1 < element.days.length; index1++) {
-    //           const element1 = element.days[index1]
-    //           element1.day_number = ++this.day_number_start
-    //         }
-    //       }
-
-    //       for (let index = 0; index < dataResponse.package_hotel.length; index++) {
-    //         this.selectedGtaCity.push(dataResponse.package_hotel[index].city_id)
-    //         this.selectHotels.push(dataResponse.package_hotel[index].hotelIDs)
-    //         this.gtaHotels.push(dataResponse.package_hotel[index].hotels)
-    //       }
-
-    //       const getListHotelsGta = dataResponse.package_hotel.map((city, index) => ({
-    //         city_id: '',
-    //         hotels: []
-    //       }))
-
-    //       this.tour.rank = dataResponse.rank
-    //       this.tour.packageOverview = dataResponse.packageOverview
-    //       this.tour.packageDuration = dataResponse.packageDuration
-    //       this.tour.packageNightsNumber = dataResponse.packageNightsNumber
-    //       this.tour.additionalCost = dataResponse.additionalprice
-    //       this.tour.discountPercent = dataResponse.discountprecentage
-    //       this.tour.availabilities = getAvailabilities
-    //       this.tour.includes = dataResponse.packageIncludes
-    //       this.tour.excludes = dataResponse.packageExcludes
-    //       this.tour.slug = dataResponse.packageSlug
-    //       this.tour.image_alt = dataResponse.packageImageAlt
-    //       this.tour.image_caption = dataResponse.packageImageCaption
-    //       this.tour.packageMetaTitle = dataResponse.packageMetaTitle
-    //       this.tour.packageMetaDesc = dataResponse.packageMetaDesc
-    //       this.adventure_or_cruise = getActivities
-    //       this.tour.accommodation = getListHotelsGta
-    //       this.tour.images = dataResponse.packageImages
-    //       this.tour.load_images = dataResponse.packageImages
-    //       this.tour.master_image = dataResponse.packageImage
-    //       this.updateAdventureCruise()
-    //       this.calcTotalNumberOfDays()
-    //     }
-    //   }, () => {
-    //     this.loading = false
-    //   })
-    // },
     getTour () {
       this.$http.get(showPackage(this.$route.params.id), { headers: headers(this.$cookies.get('userToken')) }).then(response => {
         this.loading = false
@@ -2225,34 +2061,20 @@ export default {
       // cruiseID
       if (this.cruiseID) formData.append('cruise_id', this.cruiseID)
 
-      // if (this.tour.accommodation) {
-      //   for (let a = 0; a < this.tour.accommodation.length; a++) {
-      //     formData.append('accommodation[' + a + '][city_id]', this.tour.accommodation[a].city_id || '') // city_id
-
-      //     if (this.tour.accommodation[a].hotels && this.tour.accommodation[a].hotels.length > 0) {
-      //       for (let h = 0; h < this.tour.accommodation[a].hotels.length; h++) {
-      //         formData.append('accommodation[' + a + '][hotels][' + h + '][hotel_id]', this.tour.accommodation[a].hotels[h]) // Append hotel_id
-      //       }
-      //     } else {
-      //       formData.append('accommodation[' + a + '][hotels]', [])
-      //     }
-      //   }
-      // }
-      console.log(this.accommodations)
       // if (this.accommodations && this.accommodations.length > 0) {
       //   for (let a = 0; a < this.accommodations.length; a++) {
       //     const accommodation = this.accommodations[a]
 
       //     // Ensure package_city_id is appended for each accommodation
-      //     formData.append(`accommodation[${a}][package_city_id]`, accommodation.package_city_id || '')
+      //     formData.append(`accommodation[${a}][package_city_id]`, accommodation.city.id || '')
 
-      //     // Append recommended hotel
-      //     formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel || '')
+      //     // Append recommended hotel ID instead of the entire object
+      //     formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel.id || '')
 
       //     // Append all selected hotel IDs
       //     if (accommodation.hotels && accommodation.hotels.length > 0) {
-      //       accommodation.hotels.forEach((hotelId, hIndex) => {
-      //         formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotelId)
+      //       accommodation.hotels.forEach((hotel, hIndex) => {
+      //         formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotel.id || '')
       //       })
       //     } else {
       //       formData.append(`accommodation[${a}][hotels]`, [])
@@ -2263,21 +2085,32 @@ export default {
         for (let a = 0; a < this.accommodations.length; a++) {
           const accommodation = this.accommodations[a]
 
-          // Ensure package_city_id is appended for each accommodation
-          formData.append(`accommodation[${a}][package_city_id]`, accommodation.city.id || '')
+          if (!accommodation.markedForDeletion) {
+            // Ensure package_city_id is appended for each accommodation
+            formData.append(`accommodation[${a}][package_city_id]`, accommodation.city.id || '')
 
-          // Append recommended hotel ID instead of the entire object
-          formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel.id || '')
+            // Append recommended hotel ID instead of the entire object
+            formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel.id || '')
 
-          // Append all selected hotel IDs
-          if (accommodation.hotels && accommodation.hotels.length > 0) {
-            accommodation.hotels.forEach((hotel, hIndex) => {
-              formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotel.id || '')
-            })
-          } else {
-            formData.append(`accommodation[${a}][hotels]`, [])
+            // Append all selected hotel IDs
+            if (accommodation.hotels && accommodation.hotels.length > 0) {
+              accommodation.hotels.forEach((hotel, hIndex) => {
+                formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotel.id || '')
+              })
+            } else {
+              formData.append(`accommodation[${a}][hotels]`, [])
+            }
           }
         }
+      }
+
+      // Collect IDs of accommodations marked for deletion
+      const markedForDeletion = this.accommodations
+        .filter(accom => accom.markedForDeletion)
+        .map(accom => accom.id)
+
+      if (markedForDeletion.length > 0) {
+        formData.append('markedForDeletion', JSON.stringify(markedForDeletion))
       }
 
       this.$http.post(updatePackage(this.$route.params.id), formData, { headers: headers(this.$cookies.get('userToken')) }).then(response => {
@@ -2461,5 +2294,8 @@ export default {
 .gold-text {
   color: #DAA520;
   font-weight: bold;
+  text-align: center;
+  align-content: center;
+  justify-content: center;
 }
 </style>
