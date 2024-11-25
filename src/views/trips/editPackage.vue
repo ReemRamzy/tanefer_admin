@@ -295,7 +295,7 @@
                         <v-dialog persistent max-width="1000" v-model="masterImageDialog">
                         <v-card class="pa-5">
                         <v-card class="my-4 pa-4 text-center" v-for="(imageData, index) in this.tour.images"  :key="index">
-                          <v-img max-width="30%" class="text-center"  :key="index" :src="tour.load_images[index].image" max-height="150"></v-img>
+                          <v-img max-width="30%" class="text-center"  :key="index" :src="tour?.load_images[index]?.image" max-height="150"></v-img>
                           <h1 v-bind:style="{ textAlign: 'left', fontWeight: 'Medium',padding: '1rem',fontSize: '20px' } "
                           > image {{ imageData.sort ? imageData.sort : index + 1 }} </h1>
                           <v-row>
@@ -1479,29 +1479,9 @@ export default {
         if (response.body.status === 200) {
           const dataResponse = response.body.data
 
-          // // Map `package_hotel` data to `accommodations` with preselected hotels and details
-          // this.accommodations = dataResponse.package_hotel.map(hotelData => ({
-          //   package_city_id: hotelData.city_id, // City ID for package
-          //   cityName: hotelData.city_name || 'Unknown City', // Use city name or default to 'Unknown City'
-          //   hotels: hotelData.hotelIDs || [], // Array of hotel IDs
-          //   recommendedHotel: hotelData.hotelIDs[0] || null, // Default recommended hotel to the first hotel in the list (if any)
-          //   hotelDetails: hotelData.hotels || [] // Full details of hotels for display purposes
-          // }))
-          // Map `package_hotel` data to `accommodations` with full hotel details, using `hotelData.hotel` for the recommended hotel
-          // this.accommodations = dataResponse.package_hotel.map(hotelData => {
-          //   return {
-          //     city: {
-          //       name: hotelData.city_name || 'Unknown City',
-          //       id: hotelData.city_id
-          //     },
-          //     hotels: hotelData.hotels || [], // All hotels for this city
-          //     recommendedHotel: hotelData.hotel || { name: 'Unknown Hotel' } // Use the `hotel` object directly for recommended
-          //   }
-          // })
-          const packageHotel = dataResponse.package_hotel[0] // Access the first item
-          const accommodations = packageHotel.accommodations || [] // Retrieve accommodations from the first item
+          const packageHotel = dataResponse?.package_hotel[0]
+          const accommodations = packageHotel?.accommodations || []
 
-          // Map `accommodations` data to be used in the template
           this.accommodations = accommodations.map(accom => ({
             city: {
               name: accom.city_name || 'Unknown City',
@@ -1510,7 +1490,6 @@ export default {
             recommendedHotel: accom.recommended_hotel || { name: 'Unknown Hotel' },
             hotels: accom.hotels || []
           }))
-          // Map other tour-related data
           this.tour.packageTitle = dataResponse.packageTitle
           this.tour.packageOverview = dataResponse.packageOverview
           this.tour.packageDuration = dataResponse.packageDuration
@@ -1535,7 +1514,6 @@ export default {
           this.tour.is_published = dataResponse.is_published === 1
           this.tour.is_top = dataResponse.isTop === '1'
 
-          // Map `activities` to `adventure_or_cruise`
           this.adventure_or_cruise = dataResponse.activities.map((activity, activityIndex) => ({
             index_id: activityIndex,
             city_id: activity.city_id,
@@ -1562,7 +1540,6 @@ export default {
             end_day: activity.type !== 'adventure' ? Number(this.total_number_of_days) + Number(activity.days_number) : 0
           }))
 
-          // Calculate total number of days
           this.total_number_of_days = 0
           this.adventure_or_cruise.forEach(element => {
             element.start_day = element.type !== 'adventure' ? Number(this.total_number_of_days) + 1 : 0
@@ -2267,8 +2244,13 @@ export default {
     loadImagesUrl (file, index) {
       if (file) {
         const reader = new FileReader()
+        // reader.onload = (e) => {
+        //   this.tour.load_images[index].image = e.target.result
+        // }
         reader.onload = (e) => {
-          this.tour.load_images[index].image = e.target.result
+          if (this.tour.load_images[index] && this.tour.load_images[index].image) {
+            this.tour.load_images[index].image = e.target.result
+          }
         }
         reader.readAsDataURL(file)
       }
