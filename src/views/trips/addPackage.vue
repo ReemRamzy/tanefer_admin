@@ -1016,72 +1016,161 @@
                 </v-stepper-content>
 
                 <v-stepper-content step="3">
-                    <v-form ref="roomsForm" v-model="roomsFormValid">
-                      <p class="font-weight-bold">Package city hotel</p>
-                      <v-card class="my-4 pa-4 text-center" v-for="(hotel, index) in tour.accommodation" :key="index">
-                        <div>
-                          <v-row>
-                            <v-col cols="12" md="6">
-                              <v-select
-                                v-model="selectedGtaCity[index]"
-                                :items="gtaCities"
-                                item-value="id"
-                                item-text="name"
-                                color="blue"
-                                outlined
-                                label="City"
-                                :disabled="tour.cities.length === 0"
-                                @input="getGtaHotels(index)"
-                                >
-                              </v-select>
-                            </v-col>
-                            <v-col cols="12" md="6">
-                              <v-select
-                                v-model="selectHotels[index]"
-                                :items="gtaHotels[index]"
-                                item-value="id"
-                                item-text="name"
-                                color="blue"
-                                outlined
-                                label="Package Hotel"
-                                multiple
-                                :disabled="tour.cities.length === 0"
-                                >
-                              </v-select>
-                            </v-col>
-                          </v-row>
-                        </div>
-                        <v-btn @click="removeHotel(index)" color="red">Remove Hotel</v-btn>
-                      </v-card>
-                      <v-divider></v-divider>
-                      <v-btn @click="addNewHotel()" color="primary" class="mb-4 mt-2">Add New Hotel</v-btn>
-                    </v-form>
+                  <v-form ref="roomsForm" v-model="roomsFormValid">
+  <p class="font-weight-bold">Package City Hotel</p>
+  <!-- <div v-if="accommodations.length > 0">
+  <p class="font-weight-bold">Selected Accommodations:</p>
+  <ul>
+    <li v-for="(accom, index) in accommodations" :key="index">
+      <strong>City:</strong> {{ accom.city.name }} <br>
+      <strong>Recommended Hotel:</strong> {{ accom.hotel ? accom.hotel.name : 'Unknown Hotel' }}<br>
+      <strong>Hotel IDs:</strong> {{ accom.hotels.map(h => h.id).join(', ') }}
+      <v-btn color="red" @click="deleteAccommodation(index, accom)">Delete</v-btn>
+    </li>
+  </ul>
+</div> -->
+    <div v-if="accommodations.length > 0">
+      <v-row dense>
+        <v-col v-for="(accom, index) in accommodations" :key="index" cols="12" md="6" lg="4">
+          <v-card class="pa-4 mb-4" outlined>
+            <!-- City Name -->
+            <v-card-title class="gold-text">
+              {{ accom.city.name }}
+            </v-card-title>
 
-                    <v-row>
+            <!-- Recommended Hotel -->
+            <v-card-subtitle class="mt-2 mb-4">
+              <span class="gold-text">Recommended Hotel:</span> {{ accom.recommendedHotel.name }}
+            </v-card-subtitle>
 
-                      <v-btn
-                      color="warning"
-                      text
-                      @click="step = 2"
-                      class="ml-5 my-3"
-                      :disabled="addHotelLoading"
-                      >
-                      Back To Details
-                      </v-btn>
+            <!-- Checkbox to Mark for Deletion -->
+            <!-- <v-checkbox
+              v-model="accom.markedForDeletion"
+              label="Mark for Deletion"
+              class="mt-4"
+              color="red"
+              @change="toggleMarkForDeletion(accom)"
+            ></v-checkbox> -->
+          </v-card>
+        </v-col>
+      </v-row>
+    </div>
 
-                      <v-spacer></v-spacer>
+      <!-- Form for adding a new city and hotels -->
+      <v-card class="px-7 pt-7 pb-1" style="border-radius: 15px;">
+        <v-row>
+          <!-- Select Package City -->
+          <v-col cols="12" sm="4">
+            <v-select
+              v-model="packageCityPerHotel"
+              :items="cities"
+              item-value="CityID"
+              item-text="CityName"
+              color="blue"
+              outlined
+              label="Package City"
+            >
+            </v-select>
+          </v-col>
 
-                      <v-btn
-                      class="mr-5 my-3"
-                      color="primary"
-                      :disabled="tour.cities.length === 0"
-                      @click="addTour"
-                      :loading="addHotelLoading"
-                      >
-                      Add Package
-                      </v-btn>
+      <!-- Search and Select Hotels for the City -->
+      <v-col cols="12" md="6">
+        <v-menu
+          v-model="destMenu"
+          :close-on-content-click="true"
+          transition="scale-transition"
+          offset-y
+          max-height="300"
+        >
+          <template #activator="{ on, attrs }">
+            <v-text-field
+              ref="queryInput"
+              v-model="query"
+              prepend-inner-icon="mdi-map-marker"
+              label="Destination"
+              placeholder="Search for zones..."
+              solo
+              outlined
+              hide-details
+              v-bind="attrs"
+              v-on="on"
+              @input="handleInput"
+            />
+          </template>
+          <template v-if="isloading">
+            <div style="display: flex; justify-content: center; background-color: white; height: 100%;">
+              <v-progress-circular indeterminate color="primary" />
+            </div>
+          </template>
+          <v-list v-else style="overflow-y: auto; max-height: 300px;">
+            <v-list-item v-for="zone in filteredZones" :key="zone.id" @click="handleZoneSelection(zone)">
+              <v-list-item-content>
+                <v-list-item-title>{{ zone.name }}</v-list-item-title>
+                <v-list-item-subtitle v-if="zone.parent_name">
+                  {{ zone.parent_name }}
+                  <span v-if="zone.grandparent_name">, {{ zone.grandparent_name }}</span>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-col>
 
-                    </v-row>
+      <!-- Select Recommended Hotel -->
+      <v-col cols="12" md="6">
+        <v-select
+          v-model="recommendedHotel"
+          :items="filteredHotels"
+          item-value="id"
+          item-text="name"
+          color="green"
+          outlined
+          label="Admin Recommended Hotel"
+        >
+          <template v-slot:prepend-item>
+            <v-text-field
+              v-model="searchTerm"
+              append-icon="mdi-magnify"
+              label="Search hotels"
+              single-line
+              hide-details
+            ></v-text-field>
+            <div v-if="isHotelsLoading" style="text-align: center; padding: 10px;">
+              <v-progress-circular indeterminate color="primary" />
+            </div>
+          </template>
+        </v-select>
+      </v-col>
+    </v-row>
+  </v-card>
+
+  <v-btn @click="addCityHotelEntry" color="primary" class="mb-4 mt-2">Confirm Selected City and Hotel</v-btn>
+</v-form>
+<v-row>
+
+    <v-btn
+    color="warning"
+    text
+    @click="step = 2"
+    class="ml-5 my-3"
+    :disabled="addHotelLoading"
+    >
+    Back To Details
+    </v-btn>
+
+<v-spacer></v-spacer>
+
+    <v-btn
+    class="mr-5 my-3"
+    color="primary"
+    :disabled="tour.cities.length === 0"
+    @click="addTour"
+    :loading="addHotelLoading"
+    >
+    Add Package
+    </v-btn>
+
+</v-row>
                 </v-stepper-content>
             </v-stepper-items>
         </v-stepper>
@@ -1092,6 +1181,7 @@
 import { packageLists, slug, allPackages, activitiesByCityId, activitiesCruiseByCityId, hotelsByCityId, roomsByHotelId, addPackage, removePackage, getAirports, cruisesByCity, headers, gtaCountries, gtaCities, gtaHotels } from '../../links'
 import axios from 'axios'
 import xml2js from 'xml2js'
+import _ from 'lodash'
 
 export default {
   components: {},
@@ -1238,11 +1328,202 @@ export default {
       gtaCities: [],
       gtaHotels: [],
       selectedGtaCity: [],
-      selectHotels: []
+      selectHotels: [],
+      query: '',
+      results: [],
+      filteredZones: [],
+      destMenu: false,
+      isSelecting: false,
+      selectedZone: null,
+      perZoneHotels: [],
+      isloading: false,
+      searchTerm: '',
+      accommodations: [],
+      selectedHotels: [],
+      isHotelsLoading: false,
+      isHotelsAdded: false,
+      recommendedHotel: null,
+      packageCityPerHotel: '',
+      markedForDeletion: []
     }
   },
-  computed: {},
+  watch: {
+    gtaHotels (newValue) {
+      console.log('Hotels updated:', newValue)
+    }
+  },
+  computed: {
+    filteredHotels: {
+      get () {
+        if (!this.searchTerm) return this.gtaHotels
+        return this.gtaHotels.filter(hotel =>
+          hotel.name && hotel.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        )
+      },
+      set (value) {
+        console.warn('filteredHotels was set:', value)
+      }
+    }
+  },
   methods: {
+    toggleMarkForDeletion (accom) {
+      if (accom.markedForDeletion) {
+        this.markedForDeletion.push(accom)
+      } else {
+        this.markedForDeletion = this.markedForDeletion.filter(
+          item => item !== accom
+        )
+      }
+    },
+    addCityHotelEntry () {
+      // Log the values to check if they’re assigned correctly
+      console.log('Selected Package City ID:', this.packageCityPerHotel)
+      console.log('Selected Recommended Hotel:', this.recommendedHotel)
+
+      if (this.packageCityPerHotel && this.selectedHotels.length > 0 && this.recommendedHotel) {
+        // Find the selected city and recommended hotel details
+        const city = this.cities.find(city => city.CityID === this.packageCityPerHotel)
+        const recommendedHotelDetails = this.filteredHotels.find(h => h.id === this.recommendedHotel)
+
+        // Ensure the new entry matches the expected structure in `this.accommodations`
+        this.accommodations.push({
+          city: {
+            name: city ? city.CityName : 'Unknown City',
+            id: this.packageCityPerHotel
+          },
+          hotels: this.selectedHotels.map(hotelId => {
+            // Find hotel details for each selected hotel ID
+            const hotelDetails = this.filteredHotels.find(h => h.id === hotelId)
+            return hotelDetails || { id: hotelId, name: 'Unknown Hotel' } // Fallback if details not found
+          }),
+          recommendedHotel: recommendedHotelDetails || { name: 'Unknown Hotel' }
+        })
+
+        // Reset for next entry
+        this.packageCityPerHotel = null
+        this.selectedHotels = []
+        this.recommendedHotel = null
+        this.filteredHotels = []
+      } else {
+        this.snackbar = true
+        this.color = 'error'
+        this.text = 'Please select a city, hotels, and a recommended hotel before adding.'
+      }
+    },
+    handleInput: _.debounce(async function () {
+      if (this.isSelecting) return
+
+      if (this.query.length >= 3) {
+        this.isloading = true
+        this.destMenu = true
+        await this.searchZones()
+        this.isloading = false
+      } else {
+        this.isloading = false
+        this.filteredZones = []
+        this.destMenu = false
+      }
+    }, 300),
+
+    // zones based on the query
+    async searchZones () {
+      try {
+        const response = await this.$http.get('https://api.tanefer.com/api/v2/packages/search-zones', {
+          params: { query: this.query }
+        })
+        this.filteredZones = response.data
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    async handleZoneSelection (zone) {
+      // Start selecting process
+      this.isSelecting = true
+      this.selectZone(zone) // Save selected zone
+
+      this.isHotelsLoading = true // Start loading indicator for hotels
+
+      try {
+        let hotels = []
+
+        if (zone.area_type === 'CTY') {
+          const cityId = await this.getCityIdByJpdCode(zone.jpd_code)
+          hotels = await this.getGtaHotelsPerCity(cityId)
+        } else if (zone.area_type === 'REG' || zone.area_type === 'LOC') {
+          hotels = await this.searchHotelsByAddress(zone.name)
+        } else {
+          hotels = await this.getGtaHotelsPerZone(zone.id)
+        }
+
+        this.gtaHotels = hotels
+
+        this.filteredHotels = this.gtaHotels
+        this.selectedHotels = this.gtaHotels.map(hotel => hotel.id)
+
+        this.isHotelsAdded = true
+
+        this.selectedCity = zone
+      } catch (error) {
+        console.error('Error fetching hotels:', error)
+      } finally {
+        this.isHotelsLoading = false
+      }
+
+      this.$nextTick(() => {
+        this.isSelecting = false
+      })
+    },
+
+    selectZone (zone) {
+      this.destMenu = false
+      this.selectedZone = zone
+      this.query = zone.name
+    },
+
+    async getCityIdByJpdCode (jpdCode) {
+      try {
+        // const response = await hotelsServices.getCityByJpdCode(jpdCode)
+        const response = await this.$http.get('https://api.tanefer.com/api/v2/packages/get-city-by-jpd-code', {
+          params: {
+            jpd_code: jpdCode
+          }
+        })
+        return response.data.city_id
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching city ID:', error)
+      }
+    },
+    async getGtaHotelsPerCity (cityId) {
+      try {
+        const response = await this.$http.get(`https://api.tanefer.com/api/v2/packages/get-gta-hotel?city_id=${cityId}`)
+        return response.data.data
+      } catch (error) {
+        console.error('Error fetching hotels by city ID:', error)
+      }
+    },
+
+    // address fragment
+    async searchHotelsByAddress (addressFragment) {
+      try {
+        const response = await this.$http.get('https://api.tanefer.com/api/v2/packages/search-hotels-by-address', {
+          params: { address_fragment: addressFragment }
+        })
+        return response.data.data
+      } catch (error) {
+        console.error('Error fetching hotels by address:', error)
+      }
+    },
+
+    // zone ID
+    async getGtaHotelsPerZone (zoneId) {
+      try {
+        const response = await this.$http.get(`https://api.tanefer.com/api/v2/packages/get-gta-hotel?zone_id=${zoneId}`)
+        return response.data.data
+      } catch (error) {
+        console.error('Error fetching hotels by zone ID:', error)
+      }
+    },
     setSeason (dates) {
       if (dates[0] && dates[1]) {
         const firstDate = new Date(dates[0])
@@ -1593,12 +1874,35 @@ export default {
       // cruiseID
       if (this.cruiseID) formData.append('cruise_id', this.cruiseID)
 
-      if (this.tour.accommodation) {
-        for (let a = 0; a < this.tour.accommodation.length; a++) {
-          formData.append('accommodation[' + a + '][city_id]', this.selectedGtaCity[a])
-          for (let h = 0; h < this.selectHotels[a].length; h++) {
-            const getHotelsLoop = this.selectHotels[a]
-            formData.append('accommodation[' + a + '][hotels][' + h + '][hotel_id]', getHotelsLoop[h])
+      // if (this.tour.accommodation) {
+      //   for (let a = 0; a < this.tour.accommodation.length; a++) {
+      //     formData.append('accommodation[' + a + '][city_id]', this.selectedGtaCity[a])
+      //     for (let h = 0; h < this.selectHotels[a].length; h++) {
+      //       const getHotelsLoop = this.selectHotels[a]
+      //       formData.append('accommodation[' + a + '][hotels][' + h + '][hotel_id]', getHotelsLoop[h])
+      //     }
+      //   }
+      // }
+
+      if (this.accommodations && this.accommodations.length > 0) {
+        for (let a = 0; a < this.accommodations.length; a++) {
+          const accommodation = this.accommodations[a]
+
+          if (!accommodation.markedForDeletion) {
+            // Ensure package_city_id is appended for each accommodation
+            formData.append(`accommodation[${a}][package_city_id]`, accommodation.city.id || '')
+
+            // Append recommended hotel ID instead of the entire object
+            formData.append(`accommodation[${a}][recommended_hotel]`, accommodation.recommendedHotel.id || '')
+
+            // Append all selected hotel IDs
+            if (accommodation.hotels && accommodation.hotels.length > 0) {
+              accommodation.hotels.forEach((hotel, hIndex) => {
+                formData.append(`accommodation[${a}][hotels][${hIndex}][hotel_id]`, hotel.id || '')
+              })
+            } else {
+              formData.append(`accommodation[${a}][hotels]`, [])
+            }
           }
         }
       }
@@ -1915,3 +2219,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+.gold-text {
+  color: #DAA520;
+  font-weight: bold;
+  text-align: center;
+  align-content: center;
+  justify-content: center;
+}
+</style>
