@@ -4,8 +4,8 @@
 // const url = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v2' : 'http://localhost:8000/api/v2'
 // const tanefer = process.env.NODE_ENV === 'development' ? 'https://tanefer.nahrdev.com/api' : 'https://tanefer.nahrdev.com/api'
 // const url = process.env.NODE_ENV === 'development' ? 'https://tanefer.nahrdev.com/api/v2' : 'https://tanefer.nahrdev.com/api/v2'
-const tanefer = process.env.NODE_ENV === 'development' ? 'https://api.tanefer.com/api' : 'https://api.tanefer.com/api'
-const url = process.env.NODE_ENV === 'development' ? 'https://api.tanefer.com/api/v2' : 'https://api.tanefer.com/api/v2'
+const tanefer = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api' : 'https://api.tanefer.com/api'
+const url = process.env.NODE_ENV === 'development' ? 'http://localhost:8000/api/v2' : 'https://api.tanefer.com/api/v2'
 
 // login
 export const login = `${tanefer}/user/login`
